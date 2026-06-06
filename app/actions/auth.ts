@@ -58,15 +58,17 @@ export async function signUp(formData: FormData): Promise<ActionResult<{ role: s
     role: role as 'customer' | 'vendor' | 'admin',
   })
 
-  // Send welcome email
-  try {
-    if (role === 'vendor') {
-      await sendVendorWelcome(email, name)
-    } else {
-      await sendCustomerWelcome(email, name)
+  // Send welcome email (only if RESEND_API_KEY is configured)
+  if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== 'REPLACE_ME') {
+    try {
+      if (role === 'vendor') {
+        await sendVendorWelcome(email, name)
+      } else {
+        await sendCustomerWelcome(email, name)
+      }
+    } catch {
+      // Email failure should not block registration
     }
-  } catch {
-    // Email failure should not block registration
   }
 
   return { success: true, data: { role } }

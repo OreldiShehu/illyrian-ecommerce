@@ -16,21 +16,26 @@ export default function RegisterPage() {
     setError('')
     setLoading(true)
 
-    const formData = new FormData(e.currentTarget)
-    formData.set('role', role)
+    try {
+      const formData = new FormData(e.currentTarget)
+      formData.set('role', role)
 
-    const result = await signUp(formData)
+      const result = await signUp(formData)
 
-    if (!result.success) {
-      setError(result.error ?? 'Regjistrimi dështoi.')
+      if (!result.success) {
+        setError(result.error ?? 'Regjistrimi dështoi.')
+        setLoading(false)
+        return
+      }
+
+      if (role === 'vendor') {
+        router.push('/vendor/onboarding')
+      } else {
+        router.push('/')
+      }
+    } catch {
+      setError('Ndodhi një gabim. Provoni përsëri.')
       setLoading(false)
-      return
-    }
-
-    if (role === 'vendor') {
-      router.push('/vendor/onboarding')
-    } else {
-      router.push('/')
     }
   }
 
