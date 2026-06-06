@@ -604,6 +604,9 @@ export type Database = {
         }
       }
     }
+    Views: {
+      [_ in never]: never
+    }
     Functions: {
       is_admin: {
         Args: Record<PropertyKey, never>
@@ -617,6 +620,16 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string | null
       }
+      decrement_stock: {
+        Args: { product_id: string; amount: number }
+        Returns: undefined
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
     }
   }
 }

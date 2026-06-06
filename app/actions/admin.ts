@@ -11,7 +11,7 @@ async function requireAdmin() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Nuk jeni të kyçur.')
   const { data } = await supabase.from('users').select('role').eq('id', user.id).single()
-  if (data?.role !== 'admin') throw new Error('Nuk keni akses admin.')
+  if ((data as { role: string } | null)?.role !== 'admin') throw new Error('Nuk keni akses admin.')
   return user
 }
 
