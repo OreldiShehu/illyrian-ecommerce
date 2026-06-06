@@ -18,25 +18,30 @@ function LoginForm() {
     setError('')
     setLoading(true)
 
-    const formData = new FormData(e.currentTarget)
-    const result = await signIn(formData)
+    try {
+      const formData = new FormData(e.currentTarget)
+      const result = await signIn(formData)
 
-    if (!result.success) {
-      setError(result.error ?? 'Hyrja dështoi.')
+      if (!result.success) {
+        setError(result.error ?? 'Hyrja dështoi.')
+        setLoading(false)
+        return
+      }
+
+      const { role, vendorStatus } = result.data ?? { role: 'customer', vendorStatus: undefined }
+
+      if (role === 'admin') {
+        router.push('/admin')
+      } else if (role === 'vendor' && vendorStatus === undefined) {
+        router.push('/vendor/onboarding')
+      } else if (role === 'vendor') {
+        router.push('/vendor/dashboard')
+      } else {
+        router.push(returnUrl)
+      }
+    } catch {
+      setError('Ndodhi një gabim. Provoni përsëri.')
       setLoading(false)
-      return
-    }
-
-    const { role, vendorStatus } = result.data!
-
-    if (role === 'admin') {
-      router.push('/admin')
-    } else if (role === 'vendor' && vendorStatus === undefined) {
-      router.push('/vendor/onboarding')
-    } else if (role === 'vendor') {
-      router.push('/vendor/dashboard')
-    } else {
-      router.push(returnUrl)
     }
   }
 
