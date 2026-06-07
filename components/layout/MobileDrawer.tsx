@@ -12,10 +12,10 @@ export default function MobileDrawer({ open, onClose }: Props) {
     <>
       <div className={`mobile-drawer${open ? ' open' : ''}`} id="mobileDrawer">
         <ul>
-          <li><Link href="/" onClick={onClose}>HOME</Link></li>
-          <li><Link href="/stores" onClick={onClose}>STORES</Link></li>
-          <li><Link href="/stores?filter=offers" onClick={onClose}>OFFERS</Link></li>
-          <li><Link href="/stores?filter=new" onClick={onClose}>NEW</Link></li>
+          <li><Link href="/" onClick={onClose}>BALLINA</Link></li>
+          <li><Link href="/stores" onClick={onClose}>DYQANET</Link></li>
+          <li><Link href="/stores?filter=offers" onClick={onClose}>OFERTAT</Link></li>
+          <li><Link href="/stores?filter=new" onClick={onClose}>TË REJA</Link></li>
           <li><Link href="/vendor/onboarding" onClick={onClose}>SHIT ME NE</Link></li>
         </ul>
         <div className="drawer-bottom">
