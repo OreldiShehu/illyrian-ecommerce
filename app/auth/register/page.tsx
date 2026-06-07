@@ -1,9 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { signUp } from '@/app/actions/auth'
+import { createClient } from '@/lib/supabase/client'
 
 const clean = (s: string) =>
   Array.from(s).filter(c => {
@@ -12,7 +11,6 @@ const clean = (s: string) =>
   }).join('').trim()
 
 export default function RegisterPage() {
-  const router = useRouter()
   const [role, setRole] = useState<'customer' | 'vendor'>('customer')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -25,21 +23,61 @@ export default function RegisterPage() {
     ev.preventDefault()
     setError('')
     setLoading(true)
+
+    const name = clean(fields.name)
+    const email = clean(fields.email)
+    const phone = clean(fields.phone)
+    const password = clean(fields.password)
+    const confirmPassword = clean(fields.confirmPassword)
+
+    if (!name || !email || !password) {
+      setError('Të gjitha fushat janë të detyrueshme.')
+      setLoading(false)
+      return
+    }
+    if (password !== confirmPassword) {
+      setError('Fjalëkalimet nuk përputhen.')
+      setLoading(false)
+      return
+    }
+    if (password.length < 8) {
+      setError('Fjalëkalimi duhet të ketë të paktën 8 karaktere.')
+      setLoading(false)
+      return
+    }
+
     try {
-      const result = await signUp({
-        name: clean(fields.name),
-        email: clean(fields.email),
-        phone: clean(fields.phone),
-        password: fields.password,
-        confirmPassword: fields.confirmPassword,
-        role,
+      const supabase = createClient()
+      // Clear any corrupted existing session from storage (no network call)
+      await supabase.auth.signOut({ scope: 'local' }).catch(() => {})
+      const { data, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { name, phone, role } },
       })
-      if (!result.success) {
-        setError(result.error ?? 'Regjistrimi deshtoi.')
+
+      if (authError) {
+        setError(
+          authError.message.includes('already registered')
+            ? 'Ky email është tashmë i regjistruar.'
+            : authError.message
+        )
         setLoading(false)
         return
       }
-      router.push(role === 'vendor' ? '/vendor/onboarding' : '/')
+
+      if (!data.user) {
+        setError('Regjistrimi dështoi. Provoni përsëri.')
+        setLoading(false)
+        return
+      }
+
+      // signUp may not create a session if email confirmation is required — sign in explicitly
+      if (!data.session) {
+        await supabase.auth.signInWithPassword({ email, password })
+      }
+
+      window.location.href = role === 'vendor' ? '/vendor/onboarding' : '/'
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ndodhi nje gabim. Provoni perseri.')
       setLoading(false)
@@ -101,7 +139,7 @@ export default function RegisterPage() {
             />
           </div>
           <div className="form-group">
-            <label className="form-label">Fjalëkalimi</label>
+            <label className="form-label">Fjal&euml;kalimi</label>
             <input
               type="password" className="form-input" placeholder="Minimum 8 karaktere"
               required minLength={8} autoComplete="new-password"
@@ -109,9 +147,9 @@ export default function RegisterPage() {
             />
           </div>
           <div className="form-group">
-            <label className="form-label">Konfirmo fjalëkalimin</label>
+            <label className="form-label">Konfirmo fjal&euml;kalimin</label>
             <input
-              type="password" className="form-input" placeholder="Ri-shkruaj fjalëkalimin"
+              type="password" className="form-input" placeholder="Ri-shkruaj fjal&euml;kalimin"
               required autoComplete="new-password"
               value={fields.confirmPassword} onChange={set('confirmPassword')}
             />
