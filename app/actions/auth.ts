@@ -7,15 +7,13 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { sendCustomerWelcome, sendVendorWelcome } from '@/lib/resend'
 import type { ActionResult } from '@/types'
 
-export async function signUp(formData: FormData): Promise<ActionResult<{ role: string }>> {
+export async function signUp(payload: {
+  name: string; email: string; phone: string
+  password: string; confirmPassword: string; role: string
+}): Promise<ActionResult<{ role: string }>> {
   const supabase = await createClient()
 
-  const name = formData.get('name') as string
-  const email = formData.get('email') as string
-  const phone = formData.get('phone') as string
-  const password = formData.get('password') as string
-  const confirmPassword = formData.get('confirmPassword') as string
-  const role = (formData.get('role') as string) || 'customer'
+  const { name, email, phone, password, confirmPassword, role } = payload
 
   if (!name || !email || !password) {
     return { success: false, error: 'Të gjitha fushat janë të detyrueshme.' }
