@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { signUp } from '@/app/actions/auth'
 
+const stripInvisible = (s: string) => Array.from(s).filter(c => { const n = c.charCodeAt(0); return n !== 0xFEFF && n !== 0x200B && n !== 0x200C && n !== 0x200D && n !== 0x2060 && n !== 0x00AD; }).join('').trim()
+
 export default function RegisterPage() {
   const router = useRouter()
   const [role, setRole] = useState<'customer' | 'vendor'>('customer')
@@ -17,7 +19,11 @@ export default function RegisterPage() {
     setLoading(true)
 
     try {
-      const formData = new FormData(e.currentTarget)
+      const raw = new FormData(e.currentTarget)
+      const formData = new FormData()
+      for (const [key, value] of raw.entries()) {
+        formData.set(key, typeof value === 'string' ? stripInvisible(value) : value)
+      }
       formData.set('role', role)
 
       const result = await signUp(formData)
@@ -33,8 +39,8 @@ export default function RegisterPage() {
       } else {
         router.push('/')
       }
-    } catch {
-      setError('Ndodhi një gabim. Provoni përsëri.')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Ndodhi një gabim. Provoni përsëri.')
       setLoading(false)
     }
   }
@@ -49,7 +55,6 @@ export default function RegisterPage() {
 
         <h1 className="auth-title">REGJISTROHU</h1>
 
-        {/* Role selector */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 24 }}>
           <button
             type="button"
@@ -93,75 +98,35 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-label" htmlFor="name">Emri i plotë</label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              className="form-input"
-              placeholder="Emri Mbiemri"
-              required
-              autoComplete="name"
-            />
+            <label className="form-label" htmlFor="name">Emri i plot&euml;</label>
+            <input id="name" name="name" type="text" className="form-input" placeholder="Emri Mbiemri" required autoComplete="off" />
           </div>
 
           <div className="form-group">
             <label className="form-label" htmlFor="email">Email</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              className="form-input"
-              placeholder="email@shembull.com"
-              required
-              autoComplete="email"
-            />
+            <input id="email" name="email" type="email" className="form-input" placeholder="email@shembull.com" required autoComplete="off" />
           </div>
 
           <div className="form-group">
             <label className="form-label" htmlFor="phone">Numri i telefonit</label>
-            <input
-              id="phone"
-              name="phone"
-              type="tel"
-              className="form-input"
-              placeholder="+355 6X XXX XXXX"
-              autoComplete="tel"
-            />
+            <input id="phone" name="phone" type="tel" className="form-input" placeholder="+355 6X XXX XXXX" autoComplete="off" />
           </div>
 
           <div className="form-group">
             <label className="form-label" htmlFor="password">Fjalëkalimi</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              className="form-input"
-              placeholder="Minimum 8 karaktere"
-              required
-              autoComplete="new-password"
-              minLength={8}
-            />
+            <input id="password" name="password" type="password" className="form-input" placeholder="Minimum 8 karaktere" required autoComplete="new-password" minLength={8} />
           </div>
 
           <div className="form-group">
             <label className="form-label" htmlFor="confirmPassword">Konfirmo fjalëkalimin</label>
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              className="form-input"
-              placeholder="Ri-shkruaj fjalëkalimin"
-              required
-              autoComplete="new-password"
-            />
+            <input id="confirmPassword" name="confirmPassword" type="password" className="form-input" placeholder="Ri-shkruaj fjalëkalimin" required autoComplete="new-password" />
           </div>
 
           {error && <p className="form-error" style={{ marginBottom: 12 }}>{error}</p>}
 
           {role === 'vendor' && (
             <div style={{ background: 'var(--off-white)', border: '1px solid var(--border)', borderRadius: 6, padding: '12px 14px', marginBottom: 16, fontSize: 12, color: 'var(--gray-dark)', lineHeight: 1.6 }}>
-              💡 Pas regjistrimit do të plotësoni detajet e dyqanit tuaj. Aplikimi rishikohet brenda 24 orësh.
+              Pas regjistrimit do t&euml; plot&euml;soni detajet e dyqanit tuaj. Aplikimi rishikohet brenda 24 or&euml;sh.
             </div>
           )}
 
@@ -171,14 +136,9 @@ export default function RegisterPage() {
         </form>
 
         <div style={{ textAlign: 'center', marginTop: 20 }}>
-          <p style={{ fontSize: 12, color: 'var(--gray-dark)', marginBottom: 8 }}>
-            Keni tashmë llogari?
-          </p>
-          <Link
-            href="/auth/login"
-            style={{ fontFamily: 'var(--font-display)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', color: 'var(--black)', borderBottom: '1px solid var(--black)' }}
-          >
-            KYÇU
+          <p style={{ fontSize: 12, color: 'var(--gray-dark)', marginBottom: 8 }}>Keni tashm&euml; llogari?</p>
+          <Link href="/auth/login" style={{ fontFamily: 'var(--font-display)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', color: 'var(--black)', borderBottom: '1px solid var(--black)' }}>
+            KY&Ccedil;U
           </Link>
         </div>
       </div>
