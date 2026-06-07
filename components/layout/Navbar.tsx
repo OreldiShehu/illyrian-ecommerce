@@ -51,10 +51,10 @@ export default function Navbar({ mobileMenuOpen, onToggleMobile }: Props) {
           <span /><span /><span />
         </button>
         <ul className="nav-links">
-          <li><Link href="/" className="active">HOME</Link></li>
-          <li><Link href="/stores">STORES</Link></li>
-          <li><Link href="/stores?filter=offers">OFFERS</Link></li>
-          <li><Link href="/stores?filter=new">NEW</Link></li>
+          <li><Link href="/" className="active">BALLINA</Link></li>
+          <li><Link href="/stores">DYQANET</Link></li>
+          <li><Link href="/stores?filter=offers">OFERTAT</Link></li>
+          <li><Link href="/stores?filter=new">TË REJA</Link></li>
           <li><Link href="/vendor/onboarding">SHIT ME NE</Link></li>
         </ul>
       </div>

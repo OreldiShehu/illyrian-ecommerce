@@ -26,7 +26,6 @@ export default function StoresPageClient({ vendors, cities, categories, initialF
   const [category, setCategory] = useState(initialFilters.category ?? 'all')
   const [city, setCity] = useState(initialFilters.city ?? 'all')
   const [minRating, setMinRating] = useState(0)
-  const [onlyOffers, setOnlyOffers] = useState(initialFilters.filter === 'offers')
   const [page, setPage] = useState(1)
   const PAGE_SIZE = 20
 
@@ -38,7 +37,7 @@ export default function StoresPageClient({ vendors, cities, categories, initialF
       if (minRating > 0 && getAvgRating(v) < minRating) return false
       return true
     })
-  }, [vendors, search, category, city, minRating, onlyOffers])
+  }, [vendors, search, category, city, minRating])
 
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
@@ -105,9 +104,16 @@ export default function StoresPageClient({ vendors, cities, categories, initialF
 
       <div className="page-inner">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-          <h1 className="page-title" style={{ marginBottom: 0 }}>
-            DYQANET / STORES
-          </h1>
+          <div>
+            <h1 className="page-title" style={{ marginBottom: 0 }}>
+              {initialFilters.filter === 'offers' ? 'OFERTAT' : initialFilters.filter === 'new' ? 'TË REJA' : 'DYQANET'}
+            </h1>
+            {initialFilters.filter && (
+              <p style={{ fontSize: 11, color: 'var(--gray-mid)', marginTop: 4, fontFamily: 'var(--font-display)', letterSpacing: '0.08em' }}>
+                {initialFilters.filter === 'offers' ? 'DYQANE ME FLASH SALE AKTIVE' : 'DYQANE TË SHTUARA NË 30 DITËT E FUNDIT'}
+              </p>
+            )}
+          </div>
           <p style={{ fontSize: 12, color: 'var(--gray-dark)' }}>
             {filtered.length} dyqane
           </p>

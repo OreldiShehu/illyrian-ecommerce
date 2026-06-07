@@ -34,14 +34,35 @@ export default function VendorAnalyticsPage() {
       const since = new Date()
       since.setDate(since.getDate() - days)
 
-      const { data: orders } = await supabase
-        .from('orders')
-        .select('id, total, status, created_at, order_items(id, quantity, price, products(id, name))')
+      // orders has no vendor_id — get order IDs via order_items
+      const { data: vendorItems } = await supabase
+        .from('order_items')
+        .select('order_id, id, price, quantity, products(id, name)')
         .eq('vendor_id', v.id)
-        .gte('created_at', since.toISOString())
-        .order('created_at', { ascending: true })
 
-      const allOrders = orders ?? []
+      const orderIds = Array.from(new Set((vendorItems ?? []).map((i) => (i as any).order_id as string)))
+
+      let allOrders: any[] = []
+      if (orderIds.length > 0) {
+        const { data: ordersData } = await supabase
+          .from('orders')
+          .select('id, total, status, created_at')
+          .in('id', orderIds)
+          .gte('created_at', since.toISOString())
+          .order('created_at', { ascending: true })
+
+        const itemsByOrder = new Map<string, any[]>()
+        ;(vendorItems ?? []).forEach((item) => {
+          const oid = (item as any).order_id as string
+          if (!itemsByOrder.has(oid)) itemsByOrder.set(oid, [])
+          itemsByOrder.get(oid)!.push(item)
+        })
+
+        allOrders = (ordersData ?? []).map((order) => {
+          const o = order as any
+          return { ...o, order_items: itemsByOrder.get(o.id) ?? [] }
+        })
+      }
 
       // Revenue by date
       const byDate: Record<string, { revenue: number; orders: number }> = {}
@@ -54,7 +75,8 @@ export default function VendorAnalyticsPage() {
       allOrders.forEach((o) => {
         const key = o.created_at.slice(0, 10)
         if (byDate[key]) {
-          byDate[key].revenue += o.total
+          const itemRev = (o.order_items as any[]).reduce((s: number, i: any) => s + i.price * i.quantity, 0)
+          byDate[key].revenue += itemRev
           byDate[key].orders += 1
         }
       })
@@ -95,7 +117,9 @@ export default function VendorAnalyticsPage() {
 
       // Summary stats
       const completedOrders = allOrders.filter((o) => ['confirmed', 'shipped', 'delivered'].includes(o.status))
-      const totalRev = completedOrders.reduce((s, o) => s + o.total, 0)
+      const totalRev = completedOrders.reduce((s, o) => {
+        return s + (o.order_items as any[]).reduce((is: number, i: any) => is + i.price * i.quantity, 0)
+      }, 0)
       setStats({
         revenue: totalRev,
         orders: allOrders.length,

@@ -27,12 +27,34 @@ export default function VendorOrdersPage() {
       const { data: v } = await supabase.from('vendors').select('id').eq('user_id', user.id).single()
       if (!v) return
       setVendorId(v.id)
-      const { data } = await supabase
-        .from('orders')
-        .select('*, order_items(*, products(id, name, slug, images))')
+
+      // orders has no vendor_id — get order IDs via order_items
+      const { data: vendorItems } = await supabase
+        .from('order_items')
+        .select('order_id, id, price, quantity, size, color, products(id, name, slug, images)')
         .eq('vendor_id', v.id)
+
+      const orderIds = Array.from(new Set((vendorItems ?? []).map((i) => (i as any).order_id as string)))
+      if (!orderIds.length) { setOrders([]); setLoading(false); return }
+
+      const { data: ordersData } = await supabase
+        .from('orders')
+        .select('id, status, total, created_at, shipping_name, shipping_address, shipping_city, shipping_phone, payment_method, notes')
+        .in('id', orderIds)
         .order('created_at', { ascending: false })
-      setOrders((data ?? []) as unknown as OrderWithItems[])
+
+      const itemsByOrder = new Map<string, any[]>()
+      ;(vendorItems ?? []).forEach((item) => {
+        const oid = (item as any).order_id as string
+        if (!itemsByOrder.has(oid)) itemsByOrder.set(oid, [])
+        itemsByOrder.get(oid)!.push(item)
+      })
+
+      const formattedOrders = (ordersData ?? []).map((order) => ({
+        ...(order as any),
+        order_items: itemsByOrder.get((order as any).id) ?? [],
+      }))
+      setOrders(formattedOrders as unknown as OrderWithItems[])
       setLoading(false)
     }
     load()

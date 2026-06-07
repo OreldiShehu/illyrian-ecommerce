@@ -16,7 +16,7 @@ export default async function VendorDashboardPage() {
     .single()
 
   if (!vendor) redirect('/vendor/onboarding')
-  if (vendor.status === 'pending') {
+  if ((vendor as any).status === 'pending') {
     return (
       <div style={{ padding: 40 }}>
         <div style={{ background: '#fff', border: '1px solid #e5e5e5', borderRadius: 12, padding: 40, maxWidth: 520 }}>
@@ -31,25 +31,18 @@ export default async function VendorDashboardPage() {
 
   const now = new Date().toISOString()
 
-  const [ordersResult, productsResult, revenueResult, flashSaleResult, commResult] = await Promise.all([
+  // orders has no vendor_id column — go through order_items
+  const [vendorItemsResult, productsResult, flashSaleResult, commResult] = await Promise.all([
     supabase
-      .from('orders')
-      .select('id, status, total, created_at, shipping_name, order_items(id, products(name))')
-      .eq('vendor_id', vendor.id)
-      .order('created_at', { ascending: false })
-      .limit(10),
+      .from('order_items')
+      .select('order_id, price, quantity, orders(id, status, total, created_at, shipping_name)')
+      .eq('vendor_id', vendor.id),
 
     supabase
       .from('products')
       .select('id, name, stock, price')
       .eq('vendor_id', vendor.id)
       .eq('is_active', true),
-
-    supabase
-      .from('orders')
-      .select('total, status')
-      .eq('vendor_id', vendor.id)
-      .in('status', ['confirmed', 'shipped', 'delivered']),
 
     supabase
       .from('flash_sales')
@@ -65,17 +58,32 @@ export default async function VendorDashboardPage() {
       .eq('status', 'pending'),
   ])
 
-  const orders = ordersResult.data ?? []
+  const vendorItems = vendorItemsResult.data ?? []
+
+  // Deduplicate to unique orders sorted newest-first
+  const orderMap = new Map<string, any>()
+  vendorItems.forEach((item) => {
+    const i = item as any
+    const order = i.orders
+    if (order && !orderMap.has(i.order_id)) orderMap.set(i.order_id, order)
+  })
+  const allOrders = Array.from(orderMap.values())
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  const orders = allOrders.slice(0, 8)
+
+  // Revenue = vendor's item totals only (not full order total which may include other vendors)
+  const totalRevenue = vendorItems
+    .filter((item) => ['confirmed', 'shipped', 'delivered'].includes((item as any).orders?.status ?? ''))
+    .reduce((s, item) => s + (item as any).price * (item as any).quantity, 0)
+
   const products = productsResult.data ?? []
-  const revenueOrders = revenueResult.data ?? []
   const flashSales = flashSaleResult.data ?? []
   const pendingComms = commResult.data ?? []
 
-  const totalRevenue = revenueOrders.reduce((s, o) => s + o.total, 0)
   const pendingCommTotal = pendingComms.reduce((s, c) => s + c.amount_owed, 0)
   const lowStockProducts = products.filter((p) => p.stock <= 5)
   const totalProducts = products.length
-  const pendingOrders = orders.filter((o) => o.status === 'pending').length
+  const pendingOrders = allOrders.filter((o) => o.status === 'pending').length
 
   return (
     <div style={{ padding: 40 }}>

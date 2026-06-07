@@ -18,7 +18,7 @@ export default async function AdminOverviewPage() {
     supabase.from('vendors').select('id, status').eq('is_active', true),
     supabase
       .from('orders')
-      .select('id, total, status, created_at, shipping_name, vendors(store_name)')
+      .select('id, total, status, created_at, shipping_name')
       .gte('created_at', thirtyDaysAgo.toISOString())
       .order('created_at', { ascending: false })
       .limit(12),
@@ -76,7 +76,6 @@ export default async function AdminOverviewPage() {
                 <tr>
                   <th>POROSIA</th>
                   <th>KLIENTI</th>
-                  <th>SHITËSI</th>
                   <th>TOTALI</th>
                   <th>STATUSI</th>
                 </tr>
@@ -86,7 +85,6 @@ export default async function AdminOverviewPage() {
                   <tr key={order.id}>
                     <td style={{ fontFamily: 'var(--font-display)', fontSize: 12, fontWeight: 700 }}>#{generateOrderNumber(order.id)}</td>
                     <td style={{ fontSize: 12 }}>{order.shipping_name}</td>
-                    <td style={{ fontSize: 12, color: 'var(--gray-dark)' }}>{(order.vendors as any)?.store_name ?? '—'}</td>
                     <td style={{ fontFamily: 'var(--font-display)', fontSize: 12, fontWeight: 700 }}>{formatPrice(order.total)}</td>
                     <td>
                       <span className={`status-badge status-${order.status}`} style={{ fontSize: 10 }}>

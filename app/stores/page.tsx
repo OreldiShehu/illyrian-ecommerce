@@ -39,6 +39,24 @@ export default async function StoresPage({
     query = query.eq('city', params.city)
   }
 
+  if (params.filter === 'offers') {
+    const now = new Date().toISOString()
+    const { data: flashVendors } = await supabase
+      .from('flash_sales')
+      .select('vendor_id')
+      .eq('is_active', true)
+      .gt('ends_at', now)
+    const ids = (flashVendors ?? []).map((f) => (f as any).vendor_id as string)
+    // if no active flash sales exist, match nothing
+    query = ids.length > 0 ? query.in('id', ids) : query.eq('id', '00000000-0000-0000-0000-000000000000')
+  }
+
+  if (params.filter === 'new') {
+    const cutoff = new Date()
+    cutoff.setDate(cutoff.getDate() - 30)
+    query = query.gte('created_at', cutoff.toISOString())
+  }
+
   const { data: vendors } = await query.order('created_at', { ascending: false })
 
   const vendorList = (vendors ?? []) as unknown as VendorWithPlan[]
