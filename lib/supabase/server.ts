@@ -5,9 +5,11 @@ import type { Database } from '@/types/database'
 export async function createClient() {
   const cookieStore = await cookies()
 
+  const clean = (s: string) => s.charCodeAt(0) === 0xFEFF ? s.slice(1) : s
+
   return createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    clean(process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''),
+    clean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ''),
     {
       cookies: {
         getAll() {
