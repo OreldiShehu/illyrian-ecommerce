@@ -9,13 +9,18 @@ import OrderStatusUpdate from '@/emails/OrderStatusUpdate'
 import CommissionReminder from '@/emails/CommissionReminder'
 import PriceDropAlert from '@/emails/PriceDropAlert'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
 const FROM = 'Zaza\'s E-Commerce <noreply@zazas.al>'
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://zazas-ecommerce.vercel.app'
 
+function getResend() {
+  const key = process.env.RESEND_API_KEY
+  if (!key || key === 'REPLACE_ME') throw new Error('RESEND_API_KEY not configured')
+  return new Resend(key)
+}
+
 async function sendEmail(to: string, subject: string, component: React.ReactElement): Promise<void> {
   const html = await render(component)
-  await resend.emails.send({ from: FROM, to, subject, html })
+  await getResend().emails.send({ from: FROM, to, subject, html })
 }
 
 export async function sendCustomerWelcome(to: string, name: string): Promise<void> {
