@@ -21,11 +21,11 @@ export default function VendorWelcome({ storeName, appUrl }: Props) {
   return (
     <Html lang="sq">
       <Head />
-      <Preview>Dyqani juaj në Zaza&apos;s E-Commerce — hapat e ardhshëm</Preview>
+      <Preview>Dyqani juaj në MIO E-COMMERCE — hapat e ardhshëm</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section style={header}>
-            <Text style={logo}>ZAZA&apos;S E-COMMERCE</Text>
+            <Text style={logo}>MIO E-COMMERCE</Text>
             <Text style={logoSub}>PLATFORMË PËR SHITËSIT</Text>
           </Section>
 
@@ -33,7 +33,7 @@ export default function VendorWelcome({ storeName, appUrl }: Props) {
             <Heading style={h1}>Aplikimi juaj u pranua!</Heading>
             <Text style={p}>
               Faleminderit që aplikuat për të hapur dyqanin <strong>{storeName}</strong> në
-              Zaza&apos;s E-Commerce. Ekipi ynë do të rishikojë aplikimin tuaj brenda 24 orësh.
+              MIO E-COMMERCE. Ekipi ynë do të rishikojë aplikimin tuaj brenda 24 orësh.
             </Text>
 
             <Section style={stepsBox}>
@@ -61,7 +61,7 @@ export default function VendorWelcome({ storeName, appUrl }: Props) {
               Komisioni standard: 12% për çdo shitje të suksesshme.
             </Text>
             <Text style={footer}>
-              © 2026 Zaza&apos;s E-Commerce. Të gjitha të drejtat e rezervuara.
+              © 2026 MIO E-COMMERCE. Të gjitha të drejtat e rezervuara.
             </Text>
           </Section>
         </Container>

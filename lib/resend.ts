@@ -9,8 +9,8 @@ import OrderStatusUpdate from '@/emails/OrderStatusUpdate'
 import CommissionReminder from '@/emails/CommissionReminder'
 import PriceDropAlert from '@/emails/PriceDropAlert'
 
-const FROM = 'Zaza\'s E-Commerce <noreply@zazas.al>'
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://zazas-ecommerce.vercel.app'
+const FROM = 'MIO E-Commerce <noreply@mio.al>'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://mio-ecommerce.vercel.app'
 
 function getResend() {
   const key = process.env.RESEND_API_KEY
@@ -26,7 +26,7 @@ async function sendEmail(to: string, subject: string, component: React.ReactElem
 export async function sendCustomerWelcome(to: string, name: string): Promise<void> {
   await sendEmail(
     to,
-    'Mirë se vini në Zaza\'s E-Commerce',
+    'Mirë se vini në MIO E-Commerce',
     React.createElement(CustomerWelcome, { name, appUrl: APP_URL })
   )
 }
@@ -34,7 +34,7 @@ export async function sendCustomerWelcome(to: string, name: string): Promise<voi
 export async function sendVendorWelcome(to: string, storeName: string): Promise<void> {
   await sendEmail(
     to,
-    'Dyqani juaj në Zaza\'s E-Commerce',
+    'Dyqani juaj në MIO E-Commerce',
     React.createElement(VendorWelcome, { storeName, appUrl: APP_URL })
   )
 }
@@ -105,7 +105,7 @@ export async function sendCommissionReminder(
 ): Promise<void> {
   await sendEmail(
     to,
-    'Komisioni i papaguar — Zaza\'s E-Commerce',
+    'Komisioni i papaguar — MIO E-Commerce',
     React.createElement(CommissionReminder, { ...props, appUrl: APP_URL })
   )
 }
@@ -128,7 +128,7 @@ export async function sendPriceDropAlert(
 }
 
 export async function sendNewsletterWelcome(to: string): Promise<void> {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to,
     subject: 'Faleminderit që u abonuat!',
@@ -138,7 +138,7 @@ export async function sendNewsletterWelcome(to: string): Promise<void> {
         <p style="color:#444;font-size:14px;line-height:1.7;">
           Do të merrni njoftime për dyqane të reja, oferta ekskluzive dhe produktet më të reja çdo javë.
         </p>
-        <p style="color:#999;font-size:11px;">© 2026 Zaza's E-Commerce</p>
+        <p style="color:#999;font-size:11px;">© 2026 MIO E-Commerce</p>
       </div>
     `,
   })

@@ -19,7 +19,7 @@ export default function CommissionReminder({ storeName, amountOwed, dueDate, app
       <Body style={main}>
         <Container style={container}>
           <Section style={header}>
-            <Text style={logo}>ZAZA&apos;S E-COMMERCE</Text>
+            <Text style={logo}>MIO E-COMMERCE</Text>
           </Section>
           <Section style={content}>
             <Heading style={h1}>⚠️ Komisioni i Papaguar</Heading>
@@ -44,8 +44,8 @@ export default function CommissionReminder({ storeName, amountOwed, dueDate, app
             </Button>
 
             <Hr style={hr} />
-            <Text style={footer}>Për ndihmë: kontaktoni ekipin e Zaza&apos;s E-Commerce.</Text>
-            <Text style={footer}>© 2026 Zaza&apos;s E-Commerce</Text>
+            <Text style={footer}>Për ndihmë: kontaktoni ekipin e MIO E-COMMERCE.</Text>
+            <Text style={footer}>© 2026 MIO E-COMMERCE</Text>
           </Section>
         </Container>
       </Body>

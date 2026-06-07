@@ -60,7 +60,7 @@ export default function Navbar({ mobileMenuOpen, onToggleMobile }: Props) {
       </div>
 
       <div className="nav-logo">
-        <span className="logo-main">ZAZA&apos;S E-COMMERCE</span>
+        <span className="logo-main">MIO E-COMMERCE</span>
         <span className="logo-sub">DISCOVER &nbsp;·&nbsp; COMPARE &nbsp;·&nbsp; ORDER</span>
       </div>
 

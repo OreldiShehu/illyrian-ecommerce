@@ -24,7 +24,7 @@ export default async function VendorLayout({ children }: { children: React.React
     <div style={{ display: 'flex', minHeight: '100vh' }}>
       <aside className="sidebar">
         <div className="sidebar-logo">
-          <p style={{ fontFamily: 'var(--font-display)', fontSize: 9, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.5)', marginBottom: 4 }}>ZAZA&apos;S E-COMMERCE</p>
+          <p style={{ fontFamily: 'var(--font-display)', fontSize: 9, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.5)', marginBottom: 4 }}>MIO E-COMMERCE</p>
           <p className="sidebar-logo-text">{vendor?.store_name?.toUpperCase() ?? 'DYQANI'}</p>
           {vendor?.status === 'pending' && (
             <p style={{ fontSize: 10, color: '#C9A84C', marginTop: 4, fontFamily: 'var(--font-display)' }}>NË PRITJE APROVIMI</p>

@@ -68,7 +68,7 @@ export default function VendorOnboardingPage() {
       <div style={{ maxWidth: 600, margin: '0 auto' }}>
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <p style={{ fontFamily: 'var(--font-display)', fontSize: 10, letterSpacing: '0.2em', color: 'var(--gray-mid)', marginBottom: 8 }}>ZAZA&apos;S E-COMMERCE</p>
+          <p style={{ fontFamily: 'var(--font-display)', fontSize: 10, letterSpacing: '0.2em', color: 'var(--gray-mid)', marginBottom: 8 }}>MIO E-COMMERCE</p>
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 900, letterSpacing: '0.08em' }}>HAP DYQANIN TËnd</h1>
           <p style={{ fontSize: 13, color: 'var(--gray-dark)', marginTop: 8 }}>Hapi {step} nga {TOTAL_STEPS}</p>
         </div>
@@ -91,7 +91,7 @@ export default function VendorOnboardingPage() {
                 <label className="form-label">Slug (URL) *</label>
                 <input type="text" className="form-input" value={formData.slug} onChange={(e) => updateField('slug', slugify(e.target.value))} placeholder="fashion-albania" />
                 <p style={{ fontSize: 11, color: 'var(--gray-mid)', marginTop: 4 }}>
-                  URL: zazas-ecommerce.al/stores/{formData.slug || '…'}
+                  URL: mio-ecommerce.al/stores/{formData.slug || '…'}
                 </p>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>

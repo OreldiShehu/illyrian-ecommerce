@@ -37,7 +37,7 @@ export async function uploadImage(
   }
 
   const result = await cloudinary.uploader.upload(base64, {
-    folder: `zazas-ecommerce/${folder}`,
+    folder: `mio-ecommerce/${folder}`,
     transformation: TRANSFORMS[transform],
   })
 

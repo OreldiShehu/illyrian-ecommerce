@@ -24,7 +24,7 @@ export default function PriceDropAlert({ customerName, productName, oldPrice, ne
       <Body style={main}>
         <Container style={container}>
           <Section style={header}>
-            <Text style={logo}>ZAZA&apos;S E-COMMERCE</Text>
+            <Text style={logo}>MIO E-COMMERCE</Text>
           </Section>
           <Section style={content}>
             <Heading style={h1}>🔥 Çmimi u Ul!</Heading>
@@ -45,7 +45,7 @@ export default function PriceDropAlert({ customerName, productName, oldPrice, ne
             </Button>
 
             <Hr style={hr} />
-            <Text style={footer}>© 2026 Zaza&apos;s E-Commerce</Text>
+            <Text style={footer}>© 2026 MIO E-COMMERCE</Text>
           </Section>
         </Container>
       </Body>

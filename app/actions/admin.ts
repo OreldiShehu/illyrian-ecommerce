@@ -184,7 +184,7 @@ export async function createCoupon(formData: FormData): Promise<ActionResult> {
       discount_type: discountType,
       discount_value: discountValue,
       min_order: minOrder,
-      max_uses: maxUses,
+      uses_limit: maxUses,
       expires_at: expiresAt || null,
     })
 

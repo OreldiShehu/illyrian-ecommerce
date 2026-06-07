@@ -27,11 +27,11 @@ export default function OrderConfirmation({ customerName, orderId, items, total,
   return (
     <Html lang="sq">
       <Head />
-      <Preview>Porosia #{generateOrderNumber(orderId)} u konfirmua — Zaza&apos;s E-Commerce</Preview>
+      <Preview>Porosia #{generateOrderNumber(orderId)} u konfirmua — MIO E-COMMERCE</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section style={header}>
-            <Text style={logo}>ZAZA&apos;S E-COMMERCE</Text>
+            <Text style={logo}>MIO E-COMMERCE</Text>
           </Section>
           <Section style={content}>
             <Heading style={h1}>Porosia juaj u vendos!</Heading>
@@ -77,7 +77,7 @@ export default function OrderConfirmation({ customerName, orderId, items, total,
             </Section>
 
             <Hr style={hr} />
-            <Text style={footer}>© 2026 Zaza&apos;s E-Commerce. Të gjitha të drejtat e rezervuara.</Text>
+            <Text style={footer}>© 2026 MIO E-COMMERCE. Të gjitha të drejtat e rezervuara.</Text>
           </Section>
         </Container>
       </Body>

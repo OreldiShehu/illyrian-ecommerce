@@ -91,8 +91,6 @@ export async function createProduct(formData: FormData): Promise<ActionResult<{ 
   const description = formData.get('description') as string
   const price = parseFloat(formData.get('price') as string)
   const comparePrice = formData.get('compare_price') ? parseFloat(formData.get('compare_price') as string) : null
-  const costPrice = formData.get('cost_price') ? parseFloat(formData.get('cost_price') as string) : null
-  const sku = formData.get('sku') as string | null
   const category = formData.get('category') as string
   const sizes = parseList(formData.get('sizes') as string)
   const colors = parseList(formData.get('colors') as string)
@@ -114,8 +112,6 @@ export async function createProduct(formData: FormData): Promise<ActionResult<{ 
     description: description || null,
     price,
     compare_price: comparePrice,
-    cost_price: costPrice,
-    sku: sku || null,
     category,
     sizes,
     colors,
@@ -146,8 +142,6 @@ export async function updateProduct(formData: FormData): Promise<ActionResult> {
   const description = formData.get('description') as string
   const price = parseFloat(formData.get('price') as string)
   const comparePrice = formData.get('compare_price') ? parseFloat(formData.get('compare_price') as string) : null
-  const costPrice = formData.get('cost_price') ? parseFloat(formData.get('cost_price') as string) : null
-  const sku = formData.get('sku') as string | null
   const category = formData.get('category') as string
   const sizes = parseList(formData.get('sizes') as string)
   const colors = parseList(formData.get('colors') as string)
@@ -160,8 +154,6 @@ export async function updateProduct(formData: FormData): Promise<ActionResult> {
     description: description || null,
     price,
     compare_price: comparePrice,
-    cost_price: costPrice,
-    sku: sku || null,
     category,
     sizes,
     colors,
@@ -297,7 +289,7 @@ export async function createFlashSale(formData: FormData): Promise<ActionResult>
   const { error } = await admin.from('flash_sales').insert({
     vendor_id: vendor.id,
     product_id: productId,
-    discount_percentage: discountPercentage,
+    discount_percent: discountPercentage,
     starts_at: startsAt.toISOString(),
     ends_at: endsAt.toISOString(),
     is_active: true,

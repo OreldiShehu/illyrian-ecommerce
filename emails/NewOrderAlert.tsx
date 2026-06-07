@@ -29,7 +29,7 @@ export default function NewOrderAlert({ orderId, storeName, items, customerCity,
       <Body style={main}>
         <Container style={container}>
           <Section style={header}>
-            <Text style={logo}>ZAZA&apos;S E-COMMERCE</Text>
+            <Text style={logo}>MIO E-COMMERCE</Text>
             <Text style={logoSub}>NJOFTIM PËR SHITËS</Text>
           </Section>
           <Section style={content}>
@@ -59,7 +59,7 @@ export default function NewOrderAlert({ orderId, storeName, items, customerCity,
             </Button>
 
             <Hr style={hr} />
-            <Text style={footer}>© 2026 Zaza&apos;s E-Commerce</Text>
+            <Text style={footer}>© 2026 MIO E-COMMERCE</Text>
           </Section>
         </Container>
       </Body>

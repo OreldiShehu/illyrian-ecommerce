@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="footer">
       <div className="footer-inner">
         <div className="footer-col footer-brand-col">
-          <div className="footer-logo">ZAZA&apos;S E-COMMERCE</div>
+          <div className="footer-logo">MIO E-COMMERCE</div>
           <div className="footer-logo-sub">DISCOVER · COMPARE · ORDER</div>
           <p className="footer-tagline">Platforma e modës shqiptare online.</p>
           <div className="footer-socials">
@@ -56,7 +56,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="footer-bottom">
-        <span>© 2026 Zaza&apos;s E-Commerce. Të gjitha të drejtat e rezervuara.</span>
+        <span>© 2026 MIO E-COMMERCE. Të gjitha të drejtat e rezervuara.</span>
         <div className="payment-methods">
           <span>VISA</span>
           <span>MC</span>

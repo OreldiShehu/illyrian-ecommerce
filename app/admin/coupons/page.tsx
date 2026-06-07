@@ -11,7 +11,7 @@ interface CouponRow {
   discount_type: 'percentage' | 'fixed'
   discount_value: number
   min_order: number | null
-  max_uses: number | null
+  uses_limit: number | null
   uses_count: number
   expires_at: string | null
   is_active: boolean
@@ -156,7 +156,7 @@ export default function AdminCouponsPage() {
               {coupons.map((c) => {
                 const isPending = !!actionPending
                 const isExpired = c.expires_at && new Date(c.expires_at) < new Date()
-                const isExhausted = c.max_uses !== null && c.uses_count >= c.max_uses
+                const isExhausted = c.uses_limit !== null && c.uses_count >= c.uses_limit
                 return (
                   <tr key={c.id}>
                     <td>
@@ -167,7 +167,7 @@ export default function AdminCouponsPage() {
                     </td>
                     <td style={{ fontSize: 12 }}>{c.min_order ? formatPrice(c.min_order) : '—'}</td>
                     <td style={{ fontSize: 12 }}>
-                      {c.uses_count}{c.max_uses ? ` / ${c.max_uses}` : ''} herë
+                      {c.uses_count}{c.uses_limit ? ` / ${c.uses_limit}` : ''} herë
                     </td>
                     <td style={{ fontSize: 12, color: isExpired ? '#dc2626' : 'var(--gray-dark)' }}>
                       {c.expires_at ? formatDate(c.expires_at) : '—'}

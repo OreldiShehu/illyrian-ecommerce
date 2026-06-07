@@ -36,7 +36,7 @@ export default function OrderStatusUpdate({ customerName, orderId, status, vendo
       <Body style={main}>
         <Container style={container}>
           <Section style={headerStyle}>
-            <Text style={logo}>ZAZA&apos;S E-COMMERCE</Text>
+            <Text style={logo}>MIO E-COMMERCE</Text>
           </Section>
           <Section style={content}>
             <Heading style={h1}>{copy.heading}</Heading>
@@ -49,7 +49,7 @@ export default function OrderStatusUpdate({ customerName, orderId, status, vendo
               {copy.btnText}
             </Button>
             <Hr style={hr} />
-            <Text style={footer}>© 2026 Zaza&apos;s E-Commerce</Text>
+            <Text style={footer}>© 2026 MIO E-COMMERCE</Text>
           </Section>
         </Container>
       </Body>

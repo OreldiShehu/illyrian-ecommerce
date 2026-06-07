@@ -49,7 +49,7 @@ function LoginForm() {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-logo">
-          <span className="auth-logo-main">ZAZA&apos;S E-COMMERCE</span>
+          <span className="auth-logo-main">MIO E-COMMERCE</span>
           <span className="auth-logo-sub">DISCOVER · COMPARE · ORDER</span>
         </div>
 

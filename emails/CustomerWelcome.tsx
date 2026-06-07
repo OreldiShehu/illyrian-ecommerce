@@ -21,18 +21,18 @@ export default function CustomerWelcome({ name, appUrl }: Props) {
   return (
     <Html lang="sq">
       <Head />
-      <Preview>Mirë se vini në Zaza&apos;s E-Commerce!</Preview>
+      <Preview>Mirë se vini në MIO E-COMMERCE!</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section style={header}>
-            <Text style={logo}>ZAZA&apos;S E-COMMERCE</Text>
+            <Text style={logo}>MIO E-COMMERCE</Text>
             <Text style={logoSub}>DISCOVER · COMPARE · ORDER</Text>
           </Section>
 
           <Section style={content}>
             <Heading style={h1}>Mirë se vini, {name}!</Heading>
             <Text style={p}>
-              Faleminderit që u bashkuat me Zaza&apos;s E-Commerce — platformën
+              Faleminderit që u bashkuat me MIO E-COMMERCE — platformën
               më të mirë të modës shqiptare online.
             </Text>
             <Text style={p}>
@@ -54,7 +54,7 @@ export default function CustomerWelcome({ name, appUrl }: Props) {
 
             <Hr style={hr} />
             <Text style={footer}>
-              © 2026 Zaza&apos;s E-Commerce. Të gjitha të drejtat e rezervuara.
+              © 2026 MIO E-COMMERCE. Të gjitha të drejtat e rezervuara.
             </Text>
             <Text style={footer}>
               Platforma e modës shqiptare online.
