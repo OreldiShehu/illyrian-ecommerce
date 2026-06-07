@@ -72,12 +72,22 @@ export default function RegisterPage() {
         return
       }
 
-      // signUp may not create a session if email confirmation is required — sign in explicitly
-      if (!data.session) {
-        await supabase.auth.signInWithPassword({ email, password })
+      if (data.session) {
+        // Email confirmation disabled — session ready, redirect immediately
+        window.location.href = role === 'vendor' ? '/vendor/onboarding' : '/'
+        return
       }
 
-      window.location.href = role === 'vendor' ? '/vendor/onboarding' : '/'
+      // Email confirmation required — try signing in anyway
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
+      if (!signInError) {
+        window.location.href = role === 'vendor' ? '/vendor/onboarding' : '/'
+        return
+      }
+
+      // Email not confirmed yet — show message instead of broken redirect
+      setLoading(false)
+      setError('Regjistrimi u krye! Kontrolloni emailin tuaj dhe konfirmoni llogarinë para se të hyni.')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ndodhi nje gabim. Provoni perseri.')
       setLoading(false)
