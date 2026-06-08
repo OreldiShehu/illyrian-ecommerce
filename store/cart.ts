@@ -5,7 +5,7 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 import type { CartItem, Coupon, CartState, CartActions, CartComputed } from '@/types'
 import { getDeliveryFee, loyaltyPointsToEuros } from '@/lib/utils'
 
-type CartStore = CartState & CartActions & CartComputed
+type CartStore = CartState & CartActions & CartComputed & { cartOpen: boolean; openCart: () => void; closeCart: () => void }
 
 function buildKey(productId: string, size?: string, color?: string): string {
   return [productId, size ?? '', color ?? ''].join('|')
@@ -17,6 +17,9 @@ export const useCartStore = create<CartStore>()(
       items: [],
       coupon: null,
       loyaltyPointsUsed: 0,
+      cartOpen: false,
+      openCart: () => set({ cartOpen: true }),
+      closeCart: () => set({ cartOpen: false }),
 
       addItem(product, quantity) {
         const key = buildKey(product.productId, product.size, product.color)
@@ -83,6 +86,7 @@ export const useCartStore = create<CartStore>()(
       name: 'mio-cart',
       storage: createJSONStorage(() => localStorage),
       skipHydration: true,
+      partialize: (state) => ({ items: state.items, coupon: state.coupon, loyaltyPointsUsed: state.loyaltyPointsUsed }),
     }
   )
 )

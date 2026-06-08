@@ -32,6 +32,7 @@ export default function ProductPageClient({ product, reviews, isInWishlist: init
   const [reviewError, setReviewError] = useState('')
 
   const addItem = useCartStore((s) => s.addItem)
+  const openCart = useCartStore((s) => s.openCart)
 
   const activeFlashSale = (product.flash_sales ?? []).find(isFlashSaleActive)
   const displayPrice = activeFlashSale
@@ -64,6 +65,7 @@ export default function ProductPageClient({ product, reviews, isInWishlist: init
       color: selectedColor || undefined,
       stock: product.stock,
     }, quantity)
+    openCart()
     setAddedToCart(true)
     setTimeout(() => setAddedToCart(false), 2000)
   }

@@ -15,6 +15,7 @@ export default function Navbar({ mobileMenuOpen, onToggleMobile }: Props) {
   const [scrolled, setScrolled] = useState(false)
   const [user, setUser] = useState<User | null>(null)
   const itemCount = useCartStore(selectItemCount)
+  const openCart = useCartStore((s) => s.openCart)
   const supabase = createClient()
   const initialized = useRef(false)
 
@@ -84,7 +85,7 @@ export default function Navbar({ mobileMenuOpen, onToggleMobile }: Props) {
             <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
           </svg>
         </Link>
-        <Link href="/checkout" className="icon-btn bag-btn" title="Shporta">
+        <button onClick={openCart} className="icon-btn bag-btn" title="Shporta" style={{ background: 'none', border: 'none', cursor: 'pointer', position: 'relative', padding: 0 }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
             <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
             <line x1="3" y1="6" x2="21" y2="6" />
@@ -93,7 +94,7 @@ export default function Navbar({ mobileMenuOpen, onToggleMobile }: Props) {
           {itemCount > 0 && (
             <span className="bag-count">{itemCount > 99 ? '99+' : itemCount}</span>
           )}
-        </Link>
+        </button>
       </div>
     </nav>
   )
