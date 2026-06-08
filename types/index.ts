@@ -69,14 +69,7 @@ export type CartActions = {
   clearCart: () => void
 }
 
-export type CartComputed = {
-  subtotal: number
-  discount: number
-  loyaltyDiscount: number
-  deliveryFee: number
-  total: number
-  itemCount: number
-}
+export type CartComputed = Record<string, never>
 
 export type ActionResult<T = void> = {
   success: boolean

@@ -5,7 +5,7 @@ import { CartProvider } from '@/components/providers/CartProvider'
 export const metadata: Metadata = {
   title: "MIO E-Commerce — Moda Shqiptare Online",
   description: "Zbulo, krahaso dhe porosit nga dyqanet më të mira shqiptare të modës — MIO E-Commerce.",
-  keywords: ['moda shqiptare', 'dyqane online', 'fashion albania', 'zaza ecommerce'],
+  keywords: ['moda shqiptare', 'dyqane online', 'fashion albania', 'mio ecommerce'],
   openGraph: {
     title: "MIO E-Commerce",
     description: 'Platforma e modës shqiptare online.',

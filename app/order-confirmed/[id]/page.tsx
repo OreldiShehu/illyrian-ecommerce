@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import SiteLayout from '@/components/layout/SiteLayout'
 import { formatPrice, generateOrderNumber } from '@/lib/utils'
 import type { OrderWithItems } from '@/types'
@@ -13,20 +14,20 @@ interface Props {
 export default async function OrderConfirmedPage({ params }: Props) {
   const { id } = await params
   const supabase = await createClient()
+  const admin = createAdminClient()
 
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) notFound()
 
-  const { data: order } = await supabase
+  const { data: order } = await admin
     .from('orders')
     .select('*, order_items(*, products(id, name, images, slug), vendors(id, store_name, slug))')
     .eq('id', id)
-    .eq('customer_id', user.id)
     .single()
 
   if (!order) notFound()
 
   const typedOrder = order as unknown as OrderWithItems
+  const canViewOrder = !!(order.customer_id && user?.id === order.customer_id)
 
   return (
     <SiteLayout>
@@ -93,9 +94,11 @@ export default async function OrderConfirmedPage({ params }: Props) {
         </div>
 
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-          <Link href={`/orders/${order.id}`} className="btn-primary" style={{ display: 'inline-block', textDecoration: 'none', padding: '13px 28px', width: 'auto' }}>
-            SHIKO POROSINË
-          </Link>
+          {canViewOrder && (
+            <Link href={`/orders/${order.id}`} className="btn-primary" style={{ display: 'inline-block', textDecoration: 'none', padding: '13px 28px', width: 'auto' }}>
+              SHIKO POROSINË
+            </Link>
+          )}
           <Link href="/stores" className="btn-secondary" style={{ display: 'inline-block', textDecoration: 'none', padding: '12px 20px' }}>
             VAZHDO BLERJET
           </Link>

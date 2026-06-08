@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState, useRef } from 'react'
-import { useCartStore } from '@/store/cart'
+import { useCartStore, selectItemCount } from '@/store/cart'
 import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 
@@ -14,7 +14,7 @@ interface Props {
 export default function Navbar({ mobileMenuOpen, onToggleMobile }: Props) {
   const [scrolled, setScrolled] = useState(false)
   const [user, setUser] = useState<User | null>(null)
-  const itemCount = useCartStore((s) => s.itemCount)
+  const itemCount = useCartStore(selectItemCount)
   const supabase = createClient()
   const initialized = useRef(false)
 

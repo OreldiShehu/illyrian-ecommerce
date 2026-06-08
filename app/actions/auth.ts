@@ -72,11 +72,10 @@ export async function signUp(payload: {
   return { success: true, data: { role } }
 }
 
-export async function signIn(formData: FormData): Promise<ActionResult<{ role: string; vendorStatus?: string }>> {
+export async function signIn(payload: { email: string; password: string }): Promise<ActionResult<{ role: string; vendorStatus?: string }>> {
   const supabase = await createClient()
 
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
+  const { email, password } = payload
 
   if (!email || !password) {
     return { success: false, error: 'Email dhe fjalëkalimi janë të detyrueshëm.' }

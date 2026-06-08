@@ -55,9 +55,9 @@ export default function StoresPageClient({ vendors, cities, categories, initialF
   return (
     <div className="page-container">
       {/* Search / Filter bar */}
-      <div style={{ background: 'var(--off-white)', borderBottom: '1px solid var(--border)', padding: '20px 40px' }}>
-        <form onSubmit={handleSearch} style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-          <div className="search-wrap" style={{ flex: '1 1 280px', margin: 0 }}>
+      <div className="stores-filter-bar" style={{ background: 'var(--off-white)', borderBottom: '1px solid var(--border)', padding: '20px 40px' }}>
+        <form onSubmit={handleSearch} style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+          <div className="search-wrap" style={{ flex: '1 1 220px', margin: 0, minWidth: 0 }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2">
               <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
             </svg>
@@ -70,7 +70,7 @@ export default function StoresPageClient({ vendors, cities, categories, initialF
           </div>
           <select
             className="form-select"
-            style={{ flex: '0 0 160px' }}
+            style={{ flex: '1 1 130px', minWidth: 0 }}
             value={category}
             onChange={(e) => { setCategory(e.target.value); setPage(1) }}
           >
@@ -79,7 +79,7 @@ export default function StoresPageClient({ vendors, cities, categories, initialF
           </select>
           <select
             className="form-select"
-            style={{ flex: '0 0 140px' }}
+            style={{ flex: '1 1 120px', minWidth: 0 }}
             value={city}
             onChange={(e) => { setCity(e.target.value); setPage(1) }}
           >
@@ -88,7 +88,7 @@ export default function StoresPageClient({ vendors, cities, categories, initialF
           </select>
           <select
             className="form-select"
-            style={{ flex: '0 0 160px' }}
+            style={{ flex: '1 1 120px', minWidth: 0 }}
             value={minRating}
             onChange={(e) => { setMinRating(Number(e.target.value)); setPage(1) }}
           >
@@ -96,7 +96,7 @@ export default function StoresPageClient({ vendors, cities, categories, initialF
             <option value={4}>★ 4+</option>
             <option value={4.5}>★ 4.5+</option>
           </select>
-          <button type="submit" className="btn-primary" style={{ width: 'auto', padding: '11px 20px' }}>
+          <button type="submit" className="btn-primary" style={{ width: 'auto', padding: '11px 20px', flexShrink: 0 }}>
             KËRKO
           </button>
         </form>

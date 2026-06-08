@@ -21,7 +21,7 @@ export default function Footer() {
                 <path d="M9 12a4 4 0 104 4V4a5 5 0 005 5" />
               </svg>
             </a>
-            <a href="https://wa.me/" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer">
+            <a href="https://wa.me/355692866668" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                 <path d="M3 21l1.65-3.8a9 9 0 113.4 2.9L3 21" />
                 <path d="M9 10c0 5 3.5 7.5 6 5" />

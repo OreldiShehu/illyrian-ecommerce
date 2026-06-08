@@ -21,7 +21,7 @@ export default async function VendorLayout({ children }: { children: React.React
   const { data: vendor } = await supabase.from('vendors').select('store_name, status').eq('user_id', user.id).single()
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
+    <div className="dashboard-layout">
       <aside className="sidebar">
         <div className="sidebar-logo">
           <p style={{ fontFamily: 'var(--font-display)', fontSize: 9, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.5)', marginBottom: 4 }}>MIO E-COMMERCE</p>
@@ -50,7 +50,7 @@ export default async function VendorLayout({ children }: { children: React.React
           </li>
         </ul>
       </aside>
-      <main style={{ flex: 1, background: 'var(--off-white)', minHeight: '100vh', overflow: 'auto' }}>
+      <main className="dashboard-main">
         {children}
       </main>
     </div>

@@ -20,7 +20,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (userData?.role !== 'admin') redirect('/')
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
+    <div className="dashboard-layout">
       <aside className="sidebar">
         <div className="sidebar-logo">
           <p style={{ fontFamily: 'var(--font-display)', fontSize: 9, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.5)', marginBottom: 4 }}>MIO E-COMMERCE</p>
@@ -44,7 +44,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </li>
         </ul>
       </aside>
-      <main style={{ flex: 1, background: 'var(--off-white)', minHeight: '100vh', overflow: 'auto' }}>
+      <main className="dashboard-main">
         {children}
       </main>
     </div>

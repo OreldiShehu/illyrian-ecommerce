@@ -160,6 +160,10 @@ export default function VendorProductsPage() {
     const result = await deleteProduct(fd)
     if (result.success) {
       setProducts((prev) => prev.filter((p) => p.id !== productId))
+      setSuccessMsg('Produkti u fshi.')
+      setTimeout(() => setSuccessMsg(''), 3000)
+    } else {
+      alert(result.error ?? 'Gabim gjatë fshirjes. Provoni përsëri.')
     }
   }
 
@@ -266,7 +270,8 @@ export default function VendorProductsPage() {
             <button onClick={openCreate} className="btn-primary" style={{ width: 'auto', padding: '12px 28px' }}>SHTO PRODUKTIN E PARË</button>
           </div>
         ) : (
-          <table className="data-table" style={{ width: '100%' }}>
+          <div style={{ overflowX: 'auto' }}>
+          <table className="data-table" style={{ width: '100%', minWidth: 600 }}>
             <thead>
               <tr>
                 <th style={{ width: 56 }}>IMG</th>
@@ -332,6 +337,7 @@ export default function VendorProductsPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

@@ -70,8 +70,8 @@ export default async function StorePage({ params }: Props) {
       </div>
 
       {/* Store header */}
-      <div style={{ background: 'var(--white)', borderBottom: '1px solid var(--border)', padding: '20px 40px' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20 }}>
+      <div className="store-page-header" style={{ background: 'var(--white)', borderBottom: '1px solid var(--border)', padding: '20px 40px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
           <div style={{ width: 72, height: 72, borderRadius: 12, overflow: 'hidden', border: '3px solid var(--white)', marginTop: -36, flexShrink: 0, background: '#252525', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 800, color: 'var(--white)' }}>
             {vendor.logo_url ? (
               <Image src={vendor.logo_url} alt={vendor.store_name} width={72} height={72} className="object-cover" />

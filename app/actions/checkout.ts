@@ -25,8 +25,9 @@ export async function placeOrder(data: CheckoutData): Promise<ActionResult<{ ord
   const supabase = await createClient()
   const admin = createAdminClient()
   const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) return { success: false, error: 'Duhet të jeni të kyçur për të porositur.' }
+  const customerId = user?.id ?? null
+  const loyaltyPointsUsed = user ? data.loyaltyPointsUsed ?? 0 : 0
+  const loyaltyDiscount = loyaltyPointsUsed * 0.01
 
   if (!data.name || !data.phone || !data.address || !data.city) {
     return { success: false, error: 'Të gjitha fushat janë të detyrueshme.' }
@@ -77,10 +78,6 @@ export async function placeOrder(data: CheckoutData): Promise<ActionResult<{ ord
     }
   }
 
-  // Loyalty discount
-  const loyaltyPointsUsed = data.loyaltyPointsUsed ?? 0
-  const loyaltyDiscount = loyaltyPointsUsed * 0.01
-
   // Calculate totals
   const subtotal = data.items.reduce((s, i) => s + i.price * i.quantity, 0)
   const deliveryFee = getDeliveryFee(subtotal - couponDiscount)
@@ -90,7 +87,7 @@ export async function placeOrder(data: CheckoutData): Promise<ActionResult<{ ord
   const { data: order, error: orderError } = await admin
     .from('orders')
     .insert({
-      customer_id: user.id,
+      customer_id: customerId,
       status: 'pending',
       total,
       shipping_name: data.name,
@@ -173,19 +170,21 @@ export async function placeOrder(data: CheckoutData): Promise<ActionResult<{ ord
     })
   }
 
-  // Award loyalty points (1 per €1)
-  const pointsEarned = calculateLoyaltyPoints(total)
-  if (pointsEarned > 0) {
-    await admin.from('loyalty_points').insert({
-      user_id: user.id,
-      points: pointsEarned,
-      reason: `Porosi #${order.id.slice(0, 8).toUpperCase()}`,
-      order_id: order.id,
-    })
+  // Award loyalty points (1 per €1) for logged-in customers only
+  if (user) {
+    const pointsEarned = calculateLoyaltyPoints(total)
+    if (pointsEarned > 0) {
+      await admin.from('loyalty_points').insert({
+        user_id: user.id,
+        points: pointsEarned,
+        reason: `Porosi #${order.id.slice(0, 8).toUpperCase()}`,
+        order_id: order.id,
+      })
+    }
   }
 
-  // Deduct loyalty points if used
-  if (loyaltyPointsUsed > 0) {
+  // Deduct loyalty points if used and customer is logged in
+  if (user && loyaltyPointsUsed > 0) {
     await admin.from('loyalty_points').insert({
       user_id: user.id,
       points: -loyaltyPointsUsed,
@@ -194,28 +193,32 @@ export async function placeOrder(data: CheckoutData): Promise<ActionResult<{ ord
     })
   }
 
-  // Create customer notification
-  await admin.from('notifications').insert({
-    user_id: user.id,
-    type: 'order_placed',
-    message: `Porosia juaj #${order.id.slice(0, 8).toUpperCase()} u vendos me sukses.`,
-  })
+  // Create customer notification for logged-in users only
+  if (user) {
+    await admin.from('notifications').insert({
+      user_id: user.id,
+      type: 'order_placed',
+      message: `Porosia juaj #${order.id.slice(0, 8).toUpperCase()} u vendos me sukses.`,
+    })
+  }
 
-  // Send emails
-  const { data: customerData } = await admin.from('users').select('email, name').eq('id', user.id).single()
+  // Send emails if we have a logged-in customer email
+  if (user) {
+    const { data: customerData } = await admin.from('users').select('email, name').eq('id', user.id).single()
 
-  if (customerData) {
-    try {
-      await sendOrderConfirmation(customerData.email, {
-        customerName: customerData.name,
-        orderId: order.id,
-        items: data.items.map((i) => ({ name: i.name, quantity: i.quantity, price: i.price, size: i.size, color: i.color })),
-        total,
-        deliveryFee,
-        shippingAddress: data.address,
-        shippingCity: data.city,
-      })
-    } catch { /* non-fatal */ }
+    if (customerData) {
+      try {
+        await sendOrderConfirmation(customerData.email, {
+          customerName: customerData.name,
+          orderId: order.id,
+          items: data.items.map((i) => ({ name: i.name, quantity: i.quantity, price: i.price, size: i.size, color: i.color })),
+          total,
+          deliveryFee,
+          shippingAddress: data.address,
+          shippingCity: data.city,
+        })
+      } catch { /* non-fatal */ }
+    }
   }
 
   for (const [, vendor] of vendorMap) {

@@ -28,7 +28,7 @@ export default function NewsletterSection() {
 
   return (
     <section className="newsletter-section">
-      <h3 className="nl-title">BASHKOHU ME ZAZA&apos;S</h3>
+      <h3 className="nl-title">BASHKOHU ME MIO</h3>
       <p className="nl-sub">Merr njoftime për dyqane të reja, oferta ekskluzive dhe aksesoret javore</p>
       <form className="nl-form" onSubmit={handleSubmit}>
         <input

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useCartStore } from '@/store/cart'
+import { useCartStore, selectSubtotal, selectDiscount, selectLoyaltyDiscount, selectDeliveryFee, selectTotal } from '@/store/cart'
 import { placeOrder, validateCoupon } from '@/app/actions/checkout'
 import { ALBANIAN_CITIES } from '@/types'
 import { formatPrice } from '@/lib/utils'
@@ -21,11 +21,11 @@ export default function CheckoutPage() {
   const items = useCartStore((s) => s.items)
   const coupon = useCartStore((s) => s.coupon)
   const loyaltyPointsUsed = useCartStore((s) => s.loyaltyPointsUsed)
-  const subtotal = useCartStore((s) => s.subtotal)
-  const discount = useCartStore((s) => s.discount)
-  const loyaltyDiscount = useCartStore((s) => s.loyaltyDiscount)
-  const deliveryFee = useCartStore((s) => s.deliveryFee)
-  const total = useCartStore((s) => s.total)
+  const subtotal = useCartStore(selectSubtotal)
+  const discount = useCartStore(selectDiscount)
+  const loyaltyDiscount = useCartStore(selectLoyaltyDiscount)
+  const deliveryFee = useCartStore(selectDeliveryFee)
+  const total = useCartStore(selectTotal)
   const applyCoupon = useCartStore((s) => s.applyCoupon)
   const removeCoupon = useCartStore((s) => s.removeCoupon)
   const clearCart = useCartStore((s) => s.clearCart)
@@ -52,23 +52,28 @@ export default function CheckoutPage() {
     setSubmitting(true)
     setError('')
 
-    const fd = new FormData(e.currentTarget)
-    const result = await placeOrder({
-      name: fd.get('name') as string,
-      phone: fd.get('phone') as string,
-      address: fd.get('address') as string,
-      city: fd.get('city') as string,
-      notes: fd.get('notes') as string,
-      couponCode: coupon?.code,
-      loyaltyPointsUsed,
-      items,
-    })
+    try {
+      const fd = new FormData(e.currentTarget)
+      const result = await placeOrder({
+        name: fd.get('name') as string,
+        phone: fd.get('phone') as string,
+        address: fd.get('address') as string,
+        city: fd.get('city') as string,
+        notes: fd.get('notes') as string,
+        couponCode: coupon?.code,
+        loyaltyPointsUsed,
+        items,
+      })
 
-    if (result && !result.success) {
-      setError(result.error ?? 'Porosia dështoi.')
+      if (result && !result.success) {
+        setError(result.error ?? 'Porosia dështoi.')
+        setSubmitting(false)
+      }
+      // On success, action redirects to /order-confirmed/[id]
+    } catch {
+      setError('Porosia dështoi. Kontrolloni lidhjen dhe provoni përsëri.')
       setSubmitting(false)
     }
-    // On success, action redirects to /order-confirmed/[id]
   }
 
   if (!mounted) {
@@ -102,7 +107,7 @@ export default function CheckoutPage() {
         <h1 className="page-title">CHECKOUT</h1>
 
         <form onSubmit={handleSubmit}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: 40, alignItems: 'start' }}>
+          <div className="checkout-grid">
             {/* Left: Delivery form */}
             <div>
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 13, fontWeight: 800, letterSpacing: '0.2em', marginBottom: 20, paddingBottom: 12, borderBottom: '2px solid var(--black)' }}>
@@ -153,7 +158,7 @@ export default function CheckoutPage() {
 
             {/* Right: Order summary */}
             <div>
-              <div style={{ border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden', position: 'sticky', top: 80 }}>
+              <div style={{ border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden' }}>
                 <div style={{ background: 'var(--black)', padding: '16px 20px' }}>
                   <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 12, fontWeight: 800, letterSpacing: '0.2em', color: 'var(--white)' }}>
                     PËRMBLEDHJA E POROSISË

@@ -78,40 +78,34 @@ export const useCartStore = create<CartStore>()(
         set({ items: [], coupon: null, loyaltyPointsUsed: 0 })
       },
 
-      get subtotal() {
-        return get().items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-      },
-
-      get discount() {
-        const { coupon, subtotal } = get()
-        if (!coupon) return 0
-        if (subtotal < coupon.min_order) return 0
-        if (coupon.discount_type === 'fixed') return Math.min(coupon.discount_value, subtotal)
-        return (subtotal * coupon.discount_value) / 100
-      },
-
-      get loyaltyDiscount() {
-        return loyaltyPointsToEuros(get().loyaltyPointsUsed)
-      },
-
-      get deliveryFee() {
-        const { subtotal, discount } = get()
-        return getDeliveryFee(subtotal - discount)
-      },
-
-      get total() {
-        const { subtotal, discount, loyaltyDiscount, deliveryFee } = get()
-        return Math.max(0, subtotal - discount - loyaltyDiscount + deliveryFee)
-      },
-
-      get itemCount() {
-        return get().items.reduce((sum, item) => sum + item.quantity, 0)
-      },
     }),
     {
-      name: 'zazas-cart',
+      name: 'mio-cart',
       storage: createJSONStorage(() => localStorage),
       skipHydration: true,
     }
   )
 )
+
+export const selectSubtotal = (s: CartStore) =>
+  s.items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+
+export const selectDiscount = (s: CartStore) => {
+  const subtotal = selectSubtotal(s)
+  if (!s.coupon) return 0
+  if (subtotal < s.coupon.min_order) return 0
+  if (s.coupon.discount_type === 'fixed') return Math.min(s.coupon.discount_value, subtotal)
+  return (subtotal * s.coupon.discount_value) / 100
+}
+
+export const selectLoyaltyDiscount = (s: CartStore) =>
+  loyaltyPointsToEuros(s.loyaltyPointsUsed)
+
+export const selectDeliveryFee = (s: CartStore) =>
+  getDeliveryFee(selectSubtotal(s) - selectDiscount(s))
+
+export const selectTotal = (s: CartStore) =>
+  Math.max(0, selectSubtotal(s) - selectDiscount(s) - selectLoyaltyDiscount(s) + selectDeliveryFee(s))
+
+export const selectItemCount = (s: CartStore) =>
+  s.items.reduce((sum, item) => sum + item.quantity, 0)

@@ -9,7 +9,7 @@ create extension if not exists "uuid-ossp";
 -- =============================================
 -- USERS
 -- =============================================
-create table public.users (
+create table if not exists public.users (
   id uuid primary key references auth.users on delete cascade,
   email text unique not null,
   name text not null,
@@ -23,7 +23,7 @@ create table public.users (
 -- =============================================
 -- VENDORS
 -- =============================================
-create table public.vendors (
+create table if not exists public.vendors (
   id uuid primary key default uuid_generate_v4(),
   user_id uuid references public.users on delete cascade not null,
   store_name text not null,
@@ -36,7 +36,7 @@ create table public.vendors (
   whatsapp text,
   is_verified boolean default false not null,
   is_active boolean default false not null,
-  status text check (status in ('pending','approved','rejected')) default 'pending' not null,
+  status text check (status in ('pending','active','rejected','suspended')) default 'pending' not null,
   commission_rate numeric default 12 not null,
   bank_name text,
   iban text,
@@ -47,7 +47,7 @@ create table public.vendors (
 -- =============================================
 -- PRODUCTS
 -- =============================================
-create table public.products (
+create table if not exists public.products (
   id uuid primary key default uuid_generate_v4(),
   vendor_id uuid references public.vendors on delete cascade not null,
   name text not null,
@@ -69,7 +69,7 @@ create table public.products (
 -- =============================================
 -- ORDERS
 -- =============================================
-create table public.orders (
+create table if not exists public.orders (
   id uuid primary key default uuid_generate_v4(),
   customer_id uuid references public.users on delete set null,
   status text check (status in ('pending','confirmed','shipped','delivered','cancelled')) default 'pending' not null,
@@ -92,7 +92,7 @@ create table public.orders (
 -- =============================================
 -- ORDER ITEMS
 -- =============================================
-create table public.order_items (
+create table if not exists public.order_items (
   id uuid primary key default uuid_generate_v4(),
   order_id uuid references public.orders on delete cascade not null,
   product_id uuid references public.products on delete set null,
@@ -108,7 +108,7 @@ create table public.order_items (
 -- =============================================
 -- REVIEWS
 -- =============================================
-create table public.reviews (
+create table if not exists public.reviews (
   id uuid primary key default uuid_generate_v4(),
   product_id uuid references public.products on delete cascade not null,
   customer_id uuid references public.users on delete cascade not null,
@@ -121,7 +121,7 @@ create table public.reviews (
 -- =============================================
 -- VENDOR REVIEWS
 -- =============================================
-create table public.vendor_reviews (
+create table if not exists public.vendor_reviews (
   id uuid primary key default uuid_generate_v4(),
   vendor_id uuid references public.vendors on delete cascade not null,
   customer_id uuid references public.users on delete cascade not null,
@@ -134,7 +134,7 @@ create table public.vendor_reviews (
 -- =============================================
 -- WISHLISTS
 -- =============================================
-create table public.wishlists (
+create table if not exists public.wishlists (
   id uuid primary key default uuid_generate_v4(),
   user_id uuid references public.users on delete cascade not null,
   product_id uuid references public.products on delete cascade not null,
@@ -145,7 +145,7 @@ create table public.wishlists (
 -- =============================================
 -- COUPONS
 -- =============================================
-create table public.coupons (
+create table if not exists public.coupons (
   id uuid primary key default uuid_generate_v4(),
   code text unique not null,
   discount_type text check (discount_type in ('fixed','percent')) not null,
@@ -161,7 +161,7 @@ create table public.coupons (
 -- =============================================
 -- VENDOR PLANS
 -- =============================================
-create table public.vendor_plans (
+create table if not exists public.vendor_plans (
   id uuid primary key default uuid_generate_v4(),
   vendor_id uuid references public.vendors on delete cascade not null,
   plan text check (plan in ('free','pro')) default 'free' not null,
@@ -172,7 +172,7 @@ create table public.vendor_plans (
 -- =============================================
 -- FEATURED SLOTS
 -- =============================================
-create table public.featured_slots (
+create table if not exists public.featured_slots (
   id uuid primary key default uuid_generate_v4(),
   vendor_id uuid references public.vendors on delete cascade not null,
   slot_type text check (slot_type in ('homepage','category','top')) not null,
@@ -185,7 +185,7 @@ create table public.featured_slots (
 -- =============================================
 -- NOTIFICATIONS
 -- =============================================
-create table public.notifications (
+create table if not exists public.notifications (
   id uuid primary key default uuid_generate_v4(),
   user_id uuid references public.users on delete cascade not null,
   type text not null,
@@ -197,7 +197,7 @@ create table public.notifications (
 -- =============================================
 -- LOYALTY POINTS
 -- =============================================
-create table public.loyalty_points (
+create table if not exists public.loyalty_points (
   id uuid primary key default uuid_generate_v4(),
   user_id uuid references public.users on delete cascade not null,
   points integer not null,
@@ -209,7 +209,7 @@ create table public.loyalty_points (
 -- =============================================
 -- COMMISSION LEDGER
 -- =============================================
-create table public.commission_ledger (
+create table if not exists public.commission_ledger (
   id uuid primary key default uuid_generate_v4(),
   vendor_id uuid references public.vendors on delete cascade not null,
   order_id uuid references public.orders on delete set null,
@@ -226,7 +226,7 @@ create table public.commission_ledger (
 -- =============================================
 -- EMAIL SUBSCRIBERS
 -- =============================================
-create table public.email_subscribers (
+create table if not exists public.email_subscribers (
   id uuid primary key default uuid_generate_v4(),
   email text unique not null,
   created_at timestamptz default now() not null
@@ -235,7 +235,7 @@ create table public.email_subscribers (
 -- =============================================
 -- REFERRALS
 -- =============================================
-create table public.referrals (
+create table if not exists public.referrals (
   id uuid primary key default uuid_generate_v4(),
   referrer_id uuid references public.users on delete cascade not null,
   referee_id uuid references public.users on delete cascade not null,
@@ -247,7 +247,7 @@ create table public.referrals (
 -- =============================================
 -- REFERRAL CREDITS
 -- =============================================
-create table public.referral_credits (
+create table if not exists public.referral_credits (
   id uuid primary key default uuid_generate_v4(),
   user_id uuid references public.users on delete cascade not null,
   amount numeric not null check (amount > 0),
@@ -259,7 +259,7 @@ create table public.referral_credits (
 -- =============================================
 -- FLASH SALES
 -- =============================================
-create table public.flash_sales (
+create table if not exists public.flash_sales (
   id uuid primary key default uuid_generate_v4(),
   vendor_id uuid references public.vendors on delete cascade not null,
   product_id uuid references public.products on delete cascade not null,
@@ -295,6 +295,7 @@ begin
 end;
 $$;
 
+drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
@@ -362,62 +363,62 @@ $$;
 -- =============================================
 -- USERS POLICIES
 -- =============================================
-create policy "users_select_own" on public.users
+drop policy if exists "users_select_own" on public.users; create policy "users_select_own" on public.users
   for select using (auth.uid() = id or public.is_admin());
 
-create policy "users_insert_self" on public.users
+drop policy if exists "users_insert_self" on public.users; create policy "users_insert_self" on public.users
   for insert with check (auth.uid() = id);
 
-create policy "users_update_own" on public.users
+drop policy if exists "users_update_own" on public.users; create policy "users_update_own" on public.users
   for update using (auth.uid() = id or public.is_admin());
 
 -- =============================================
 -- VENDORS POLICIES
 -- =============================================
--- Public: anyone can read active/approved vendors
-create policy "vendors_public_select" on public.vendors
+-- Public: anyone can read active vendors
+drop policy if exists "vendors_public_select" on public.vendors; create policy "vendors_public_select" on public.vendors
   for select using (
-    (is_active = true and status = 'approved')
+    (is_active = true and status = 'active')
     or user_id = auth.uid()
     or public.is_admin()
   );
 
-create policy "vendors_insert_own" on public.vendors
+drop policy if exists "vendors_insert_own" on public.vendors; create policy "vendors_insert_own" on public.vendors
   for insert with check (user_id = auth.uid() or public.is_admin());
 
-create policy "vendors_update_own" on public.vendors
+drop policy if exists "vendors_update_own" on public.vendors; create policy "vendors_update_own" on public.vendors
   for update using (user_id = auth.uid() or public.is_admin());
 
-create policy "vendors_delete_admin" on public.vendors
+drop policy if exists "vendors_delete_admin" on public.vendors; create policy "vendors_delete_admin" on public.vendors
   for delete using (public.is_admin());
 
 -- =============================================
 -- PRODUCTS POLICIES
 -- =============================================
 -- Public: anyone can read active products from active vendors
-create policy "products_public_select" on public.products
+drop policy if exists "products_public_select" on public.products; create policy "products_public_select" on public.products
   for select using (
     (is_active = true and exists (
       select 1 from public.vendors
       where vendors.id = products.vendor_id
         and vendors.is_active = true
-        and vendors.status = 'approved'
+        and vendors.status = 'active'
     ))
     or vendor_id = public.my_vendor_id()
     or public.is_admin()
   );
 
-create policy "products_vendor_insert" on public.products
+drop policy if exists "products_vendor_insert" on public.products; create policy "products_vendor_insert" on public.products
   for insert with check (
     vendor_id = public.my_vendor_id() or public.is_admin()
   );
 
-create policy "products_vendor_update" on public.products
+drop policy if exists "products_vendor_update" on public.products; create policy "products_vendor_update" on public.products
   for update using (
     vendor_id = public.my_vendor_id() or public.is_admin()
   );
 
-create policy "products_vendor_delete" on public.products
+drop policy if exists "products_vendor_delete" on public.products; create policy "products_vendor_delete" on public.products
   for delete using (
     vendor_id = public.my_vendor_id() or public.is_admin()
   );
@@ -425,7 +426,7 @@ create policy "products_vendor_delete" on public.products
 -- =============================================
 -- ORDERS POLICIES
 -- =============================================
-create policy "orders_customer_select" on public.orders
+drop policy if exists "orders_customer_select" on public.orders; create policy "orders_customer_select" on public.orders
   for select using (
     customer_id = auth.uid()
     or exists (
@@ -436,10 +437,10 @@ create policy "orders_customer_select" on public.orders
     or public.is_admin()
   );
 
-create policy "orders_customer_insert" on public.orders
+drop policy if exists "orders_customer_insert" on public.orders; create policy "orders_customer_insert" on public.orders
   for insert with check (customer_id = auth.uid() or public.is_admin());
 
-create policy "orders_update" on public.orders
+drop policy if exists "orders_update" on public.orders; create policy "orders_update" on public.orders
   for update using (
     customer_id = auth.uid()
     or exists (
@@ -453,7 +454,7 @@ create policy "orders_update" on public.orders
 -- =============================================
 -- ORDER ITEMS POLICIES
 -- =============================================
-create policy "order_items_select" on public.order_items
+drop policy if exists "order_items_select" on public.order_items; create policy "order_items_select" on public.order_items
   for select using (
     exists (
       select 1 from public.orders o
@@ -464,7 +465,7 @@ create policy "order_items_select" on public.order_items
     or public.is_admin()
   );
 
-create policy "order_items_insert" on public.order_items
+drop policy if exists "order_items_insert" on public.order_items; create policy "order_items_insert" on public.order_items
   for insert with check (
     exists (
       select 1 from public.orders o
@@ -476,10 +477,10 @@ create policy "order_items_insert" on public.order_items
 -- =============================================
 -- REVIEWS POLICIES
 -- =============================================
-create policy "reviews_public_select" on public.reviews
+drop policy if exists "reviews_public_select" on public.reviews; create policy "reviews_public_select" on public.reviews
   for select using (true);
 
-create policy "reviews_customer_insert" on public.reviews
+drop policy if exists "reviews_customer_insert" on public.reviews; create policy "reviews_customer_insert" on public.reviews
   for insert with check (
     customer_id = auth.uid()
     and exists (
@@ -491,19 +492,19 @@ create policy "reviews_customer_insert" on public.reviews
     )
   );
 
-create policy "reviews_customer_update" on public.reviews
+drop policy if exists "reviews_customer_update" on public.reviews; create policy "reviews_customer_update" on public.reviews
   for update using (customer_id = auth.uid() or public.is_admin());
 
-create policy "reviews_admin_delete" on public.reviews
+drop policy if exists "reviews_admin_delete" on public.reviews; create policy "reviews_admin_delete" on public.reviews
   for delete using (public.is_admin());
 
 -- =============================================
 -- VENDOR REVIEWS POLICIES
 -- =============================================
-create policy "vendor_reviews_public_select" on public.vendor_reviews
+drop policy if exists "vendor_reviews_public_select" on public.vendor_reviews; create policy "vendor_reviews_public_select" on public.vendor_reviews
   for select using (true);
 
-create policy "vendor_reviews_customer_insert" on public.vendor_reviews
+drop policy if exists "vendor_reviews_customer_insert" on public.vendor_reviews; create policy "vendor_reviews_customer_insert" on public.vendor_reviews
   for insert with check (
     customer_id = auth.uid()
     and exists (
@@ -518,120 +519,118 @@ create policy "vendor_reviews_customer_insert" on public.vendor_reviews
 -- =============================================
 -- WISHLISTS POLICIES
 -- =============================================
-create policy "wishlists_own" on public.wishlists
+drop policy if exists "wishlists_own" on public.wishlists; create policy "wishlists_own" on public.wishlists
   for all using (user_id = auth.uid() or public.is_admin());
 
 -- =============================================
 -- COUPONS POLICIES
 -- =============================================
-create policy "coupons_public_select" on public.coupons
+drop policy if exists "coupons_public_select" on public.coupons; create policy "coupons_public_select" on public.coupons
   for select using (is_active = true or public.is_admin());
 
-create policy "coupons_admin_all" on public.coupons
+drop policy if exists "coupons_admin_all" on public.coupons; create policy "coupons_admin_all" on public.coupons
   for all using (public.is_admin());
 
 -- =============================================
 -- VENDOR PLANS POLICIES
 -- =============================================
-create policy "vendor_plans_select" on public.vendor_plans
-  for select using (
-    vendor_id = public.my_vendor_id() or public.is_admin()
-  );
+drop policy if exists "vendor_plans_select" on public.vendor_plans; create policy "vendor_plans_select" on public.vendor_plans
+  for select using (true);
 
-create policy "vendor_plans_admin_all" on public.vendor_plans
+drop policy if exists "vendor_plans_admin_all" on public.vendor_plans; create policy "vendor_plans_admin_all" on public.vendor_plans
   for all using (public.is_admin());
 
 -- =============================================
 -- FEATURED SLOTS POLICIES
 -- =============================================
-create policy "featured_slots_public_select" on public.featured_slots
+drop policy if exists "featured_slots_public_select" on public.featured_slots; create policy "featured_slots_public_select" on public.featured_slots
   for select using (
     (is_paid = true and ends_at > now())
     or vendor_id = public.my_vendor_id()
     or public.is_admin()
   );
 
-create policy "featured_slots_admin_all" on public.featured_slots
+drop policy if exists "featured_slots_admin_all" on public.featured_slots; create policy "featured_slots_admin_all" on public.featured_slots
   for all using (public.is_admin());
 
 -- =============================================
 -- NOTIFICATIONS POLICIES
 -- =============================================
-create policy "notifications_own" on public.notifications
+drop policy if exists "notifications_own" on public.notifications; create policy "notifications_own" on public.notifications
   for all using (user_id = auth.uid() or public.is_admin());
 
 -- =============================================
 -- LOYALTY POINTS POLICIES
 -- =============================================
-create policy "loyalty_points_own" on public.loyalty_points
+drop policy if exists "loyalty_points_own" on public.loyalty_points; create policy "loyalty_points_own" on public.loyalty_points
   for select using (user_id = auth.uid() or public.is_admin());
 
-create policy "loyalty_points_system_insert" on public.loyalty_points
+drop policy if exists "loyalty_points_system_insert" on public.loyalty_points; create policy "loyalty_points_system_insert" on public.loyalty_points
   for insert with check (public.is_admin() or auth.uid() is not null);
 
 -- =============================================
 -- COMMISSION LEDGER POLICIES
 -- =============================================
-create policy "commission_vendor_select" on public.commission_ledger
+drop policy if exists "commission_vendor_select" on public.commission_ledger; create policy "commission_vendor_select" on public.commission_ledger
   for select using (
     vendor_id = public.my_vendor_id() or public.is_admin()
   );
 
-create policy "commission_vendor_update" on public.commission_ledger
+drop policy if exists "commission_vendor_update" on public.commission_ledger; create policy "commission_vendor_update" on public.commission_ledger
   for update using (
     vendor_id = public.my_vendor_id() or public.is_admin()
   );
 
-create policy "commission_admin_all" on public.commission_ledger
+drop policy if exists "commission_admin_all" on public.commission_ledger; create policy "commission_admin_all" on public.commission_ledger
   for all using (public.is_admin());
 
 -- =============================================
 -- EMAIL SUBSCRIBERS POLICIES
 -- =============================================
-create policy "email_subscribers_insert" on public.email_subscribers
+drop policy if exists "email_subscribers_insert" on public.email_subscribers; create policy "email_subscribers_insert" on public.email_subscribers
   for insert with check (true);
 
-create policy "email_subscribers_admin_select" on public.email_subscribers
+drop policy if exists "email_subscribers_admin_select" on public.email_subscribers; create policy "email_subscribers_admin_select" on public.email_subscribers
   for select using (public.is_admin());
 
 -- =============================================
 -- REFERRALS POLICIES
 -- =============================================
-create policy "referrals_own" on public.referrals
+drop policy if exists "referrals_own" on public.referrals; create policy "referrals_own" on public.referrals
   for select using (
     referrer_id = auth.uid() or referee_id = auth.uid() or public.is_admin()
   );
 
-create policy "referrals_insert" on public.referrals
+drop policy if exists "referrals_insert" on public.referrals; create policy "referrals_insert" on public.referrals
   for insert with check (referee_id = auth.uid() or public.is_admin());
 
 -- =============================================
 -- REFERRAL CREDITS POLICIES
 -- =============================================
-create policy "referral_credits_own" on public.referral_credits
+drop policy if exists "referral_credits_own" on public.referral_credits; create policy "referral_credits_own" on public.referral_credits
   for select using (user_id = auth.uid() or public.is_admin());
 
 -- =============================================
 -- FLASH SALES POLICIES
 -- =============================================
-create policy "flash_sales_public_select" on public.flash_sales
+drop policy if exists "flash_sales_public_select" on public.flash_sales; create policy "flash_sales_public_select" on public.flash_sales
   for select using (
     (is_active = true and ends_at > now())
     or vendor_id = public.my_vendor_id()
     or public.is_admin()
   );
 
-create policy "flash_sales_vendor_insert" on public.flash_sales
+drop policy if exists "flash_sales_vendor_insert" on public.flash_sales; create policy "flash_sales_vendor_insert" on public.flash_sales
   for insert with check (
     vendor_id = public.my_vendor_id() or public.is_admin()
   );
 
-create policy "flash_sales_vendor_update" on public.flash_sales
+drop policy if exists "flash_sales_vendor_update" on public.flash_sales; create policy "flash_sales_vendor_update" on public.flash_sales
   for update using (
     vendor_id = public.my_vendor_id() or public.is_admin()
   );
 
-create policy "flash_sales_admin_delete" on public.flash_sales
+drop policy if exists "flash_sales_admin_delete" on public.flash_sales; create policy "flash_sales_admin_delete" on public.flash_sales
   for delete using (public.is_admin());
 -- =============================================
 -- ZAZA'S E-COMMERCE — Performance Indexes
@@ -639,71 +638,71 @@ create policy "flash_sales_admin_delete" on public.flash_sales
 -- =============================================
 
 -- Vendors
-create index idx_vendors_slug on public.vendors (slug);
-create index idx_vendors_user_id on public.vendors (user_id);
-create index idx_vendors_status on public.vendors (status);
-create index idx_vendors_city on public.vendors (city);
-create index idx_vendors_category on public.vendors (category);
-create index idx_vendors_is_active on public.vendors (is_active);
+create index if not exists idx_vendors_slug on public.vendors (slug);
+create index if not exists idx_vendors_user_id on public.vendors (user_id);
+create index if not exists idx_vendors_status on public.vendors (status);
+create index if not exists idx_vendors_city on public.vendors (city);
+create index if not exists idx_vendors_category on public.vendors (category);
+create index if not exists idx_vendors_is_active on public.vendors (is_active);
 
 -- Products
-create index idx_products_slug on public.products (slug);
-create index idx_products_vendor_id on public.products (vendor_id);
-create index idx_products_category on public.products (category);
-create index idx_products_is_active on public.products (is_active);
-create index idx_products_is_featured on public.products (is_featured);
-create index idx_products_price on public.products (price);
-create index idx_products_stock on public.products (stock);
+create index if not exists idx_products_slug on public.products (slug);
+create index if not exists idx_products_vendor_id on public.products (vendor_id);
+create index if not exists idx_products_category on public.products (category);
+create index if not exists idx_products_is_active on public.products (is_active);
+create index if not exists idx_products_is_featured on public.products (is_featured);
+create index if not exists idx_products_price on public.products (price);
+create index if not exists idx_products_stock on public.products (stock);
 
 -- Orders
-create index idx_orders_customer_id on public.orders (customer_id);
-create index idx_orders_status on public.orders (status);
-create index idx_orders_created_at on public.orders (created_at desc);
+create index if not exists idx_orders_customer_id on public.orders (customer_id);
+create index if not exists idx_orders_status on public.orders (status);
+create index if not exists idx_orders_created_at on public.orders (created_at desc);
 
 -- Order items
-create index idx_order_items_order_id on public.order_items (order_id);
-create index idx_order_items_vendor_id on public.order_items (vendor_id);
-create index idx_order_items_product_id on public.order_items (product_id);
+create index if not exists idx_order_items_order_id on public.order_items (order_id);
+create index if not exists idx_order_items_vendor_id on public.order_items (vendor_id);
+create index if not exists idx_order_items_product_id on public.order_items (product_id);
 
 -- Reviews
-create index idx_reviews_product_id on public.reviews (product_id);
-create index idx_reviews_customer_id on public.reviews (customer_id);
+create index if not exists idx_reviews_product_id on public.reviews (product_id);
+create index if not exists idx_reviews_customer_id on public.reviews (customer_id);
 
 -- Vendor reviews
-create index idx_vendor_reviews_vendor_id on public.vendor_reviews (vendor_id);
+create index if not exists idx_vendor_reviews_vendor_id on public.vendor_reviews (vendor_id);
 
 -- Wishlists
-create index idx_wishlists_user_id on public.wishlists (user_id);
+create index if not exists idx_wishlists_user_id on public.wishlists (user_id);
 
 -- Notifications
-create index idx_notifications_user_id on public.notifications (user_id);
-create index idx_notifications_read on public.notifications (read);
+create index if not exists idx_notifications_user_id on public.notifications (user_id);
+create index if not exists idx_notifications_read on public.notifications (read);
 
 -- Loyalty points
-create index idx_loyalty_points_user_id on public.loyalty_points (user_id);
+create index if not exists idx_loyalty_points_user_id on public.loyalty_points (user_id);
 
 -- Commission ledger
-create index idx_commission_ledger_vendor_id on public.commission_ledger (vendor_id);
-create index idx_commission_ledger_status on public.commission_ledger (status);
-create index idx_commission_ledger_due_date on public.commission_ledger (due_date);
+create index if not exists idx_commission_ledger_vendor_id on public.commission_ledger (vendor_id);
+create index if not exists idx_commission_ledger_status on public.commission_ledger (status);
+create index if not exists idx_commission_ledger_due_date on public.commission_ledger (due_date);
 
 -- Flash sales
-create index idx_flash_sales_product_id on public.flash_sales (product_id);
-create index idx_flash_sales_vendor_id on public.flash_sales (vendor_id);
-create index idx_flash_sales_is_active on public.flash_sales (is_active);
-create index idx_flash_sales_ends_at on public.flash_sales (ends_at);
+create index if not exists idx_flash_sales_product_id on public.flash_sales (product_id);
+create index if not exists idx_flash_sales_vendor_id on public.flash_sales (vendor_id);
+create index if not exists idx_flash_sales_is_active on public.flash_sales (is_active);
+create index if not exists idx_flash_sales_ends_at on public.flash_sales (ends_at);
 
 -- Vendor plans
-create index idx_vendor_plans_vendor_id on public.vendor_plans (vendor_id);
+create index if not exists idx_vendor_plans_vendor_id on public.vendor_plans (vendor_id);
 
 -- Featured slots
-create index idx_featured_slots_vendor_id on public.featured_slots (vendor_id);
-create index idx_featured_slots_slot_type on public.featured_slots (slot_type);
-create index idx_featured_slots_ends_at on public.featured_slots (ends_at);
+create index if not exists idx_featured_slots_vendor_id on public.featured_slots (vendor_id);
+create index if not exists idx_featured_slots_slot_type on public.featured_slots (slot_type);
+create index if not exists idx_featured_slots_ends_at on public.featured_slots (ends_at);
 
 -- Coupons
-create index idx_coupons_code on public.coupons (code);
-create index idx_coupons_is_active on public.coupons (is_active);
+create index if not exists idx_coupons_code on public.coupons (code);
+create index if not exists idx_coupons_is_active on public.coupons (is_active);
 -- RPC: atomically decrement stock, fail if insufficient
 -- RPC parameter names must match what the client passes
 CREATE OR REPLACE FUNCTION decrement_stock(product_id uuid, amount int)

@@ -34,18 +34,18 @@ export default function StoreProductsClient({ products }: Props) {
   return (
     <div>
       {/* Filters */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
-        <div className="search-wrap" style={{ flex: '1 1 220px', margin: 0 }}>
+      <div style={{ display: 'flex', gap: 10, marginBottom: 24, flexWrap: 'wrap' }}>
+        <div className="search-wrap" style={{ flex: '1 1 180px', margin: 0, minWidth: 0 }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2">
             <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
           </svg>
           <input type="text" placeholder="Kërko produkte…" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} />
         </div>
-        <select className="form-select" style={{ flex: '0 0 160px' }} value={category} onChange={(e) => { setCategory(e.target.value); setPage(1) }}>
+        <select className="form-select" style={{ flex: '1 1 130px', minWidth: 0 }} value={category} onChange={(e) => { setCategory(e.target.value); setPage(1) }}>
           <option value="all">Të gjitha</option>
           {[...PRODUCT_CATEGORIES].map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
-        <select className="form-select" style={{ flex: '0 0 160px' }} value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+        <select className="form-select" style={{ flex: '1 1 130px', minWidth: 0 }} value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
           <option value="newest">Më të rejat</option>
           <option value="price_asc">Çmimi: i ulët–i lartë</option>
           <option value="price_desc">Çmimi: i lartë–i ulët</option>

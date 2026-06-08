@@ -6,7 +6,7 @@ export default function HeroSection() {
       <div className="hero-content">
         <p className="hero-tag">MODA SHQIPTARE — FASHION ALBANIAN</p>
         <h1 className="hero-title">
-          ZAZA&apos;S<br />E-COMMERCE
+          MIO<br />E-COMMERCE
         </h1>
         <p className="hero-sub">DISCOVER &nbsp;·&nbsp; COMPARE &nbsp;·&nbsp; ORDER</p>
         <Link href="/stores" className="hero-btn">EXPLORE STORES</Link>

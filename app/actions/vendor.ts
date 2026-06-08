@@ -62,9 +62,16 @@ export async function completeOnboarding(formData: FormData): Promise<ActionResu
     is_active: false,
   }).select('id').single()
 
-  if (error || !vendor) return { success: false, error: 'Regjistrimi dështoi. Provoni përsëri.' }
+  if (error || !vendor) {
+    console.error('Vendor onboarding failed:', error?.message ?? error)
+    return { success: false, error: error?.message ?? 'Regjistrimi dështoi. Provoni përsëri.' }
+  }
 
-  await admin.from('vendor_plans').insert({ vendor_id: vendor.id, plan: plan as 'free' | 'pro' })
+  const { error: planError } = await admin.from('vendor_plans').insert({ vendor_id: vendor.id, plan: plan as 'free' | 'pro' })
+  if (planError) {
+    console.error('Vendor plan insert failed:', planError.message)
+    return { success: false, error: planError.message }
+  }
 
   revalidatePath('/vendor/onboarding')
   return { success: true }
