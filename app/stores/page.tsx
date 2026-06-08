@@ -64,12 +64,32 @@ export default async function StoresPage({
   // Get distinct cities
   const cities = Array.from(new Set(vendorList.map((v) => v.city).filter(Boolean))) as string[]
 
+  // Fetch up to 4 active products per vendor for the preview strip
+  const vendorIds = vendorList.map((v) => v.id)
+  let productsByVendor: Record<string, { id: string; name: string; images: string[]; price: number; slug: string }[]> = {}
+
+  if (vendorIds.length > 0) {
+    const { data: products } = await supabase
+      .from('products')
+      .select('id, name, images, price, slug, vendor_id')
+      .in('vendor_id', vendorIds)
+      .eq('is_active', true)
+      .gt('stock', 0)
+      .order('created_at', { ascending: false })
+
+    for (const p of products ?? []) {
+      if (!productsByVendor[p.vendor_id]) productsByVendor[p.vendor_id] = []
+      if (productsByVendor[p.vendor_id].length < 4) productsByVendor[p.vendor_id].push(p)
+    }
+  }
+
   return (
     <SiteLayout>
       <StoresPageClient
         vendors={vendorList}
         cities={cities}
         categories={[...VENDOR_CATEGORIES]}
+        productsByVendor={productsByVendor}
         initialFilters={{
           q: params.q,
           category: params.category,

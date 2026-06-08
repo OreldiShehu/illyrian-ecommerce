@@ -7,10 +7,13 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import type { VendorWithPlan } from '@/types'
 import { getInitials } from '@/lib/utils'
 
+type StoreProduct = { id: string; name: string; images: string[]; price: number; slug: string }
+
 interface Props {
   vendors: VendorWithPlan[]
   cities: string[]
   categories: string[]
+  productsByVendor: Record<string, StoreProduct[]>
   initialFilters: { q?: string; category?: string; city?: string; filter?: string }
 }
 
@@ -20,7 +23,7 @@ function getAvgRating(vendor: VendorWithPlan): number {
   return reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
 }
 
-export default function StoresPageClient({ vendors, cities, categories, initialFilters }: Props) {
+export default function StoresPageClient({ vendors, cities, categories, productsByVendor, initialFilters }: Props) {
   const router = useRouter()
   const [search, setSearch] = useState(initialFilters.q ?? '')
   const [category, setCategory] = useState(initialFilters.category ?? 'all')
@@ -130,6 +133,8 @@ export default function StoresPageClient({ vendors, cities, categories, initialF
               const plan = (vendor as unknown as { vendor_plans?: { plan: string }[] }).vendor_plans?.[0]?.plan
               const reviewCount = (vendor as unknown as { vendor_reviews?: unknown[] }).vendor_reviews?.length ?? 0
 
+              const storeProducts = productsByVendor[vendor.id] ?? []
+
               return (
                 <Link
                   key={vendor.id}
@@ -137,11 +142,24 @@ export default function StoresPageClient({ vendors, cities, categories, initialF
                   style={{ textDecoration: 'none', display: 'block' }}
                 >
                   <div className="store-block" style={{ margin: 0, cursor: 'pointer' }}>
-                    {vendor.banner_url && (
+                    {/* Product preview strip */}
+                    {storeProducts.length > 0 ? (
+                      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(storeProducts.length, 4)}, 1fr)`, height: 110, overflow: 'hidden' }}>
+                        {storeProducts.slice(0, 4).map((p) => (
+                          <div key={p.id} style={{ position: 'relative', overflow: 'hidden' }}>
+                            {p.images?.[0] ? (
+                              <Image src={p.images[0]} alt={p.name} fill className="object-cover" sizes="120px" />
+                            ) : (
+                              <div style={{ width: '100%', height: '100%', background: '#2a2a2a' }} />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : vendor.banner_url ? (
                       <div style={{ height: 80, position: 'relative', overflow: 'hidden' }}>
                         <Image src={vendor.banner_url} alt="" fill className="object-cover" />
                       </div>
-                    )}
+                    ) : null}
                     <div className="store-head">
                       <div className="store-info">
                         <div className="store-avatar">
