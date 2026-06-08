@@ -60,50 +60,82 @@ export default async function StorePage({ params }: Props) {
   return (
     <SiteLayout>
       {/* Banner */}
-      <div style={{ position: 'relative', height: 220, background: '#252525', overflow: 'hidden' }}>
+      <div style={{ position: 'relative', height: 200, background: '#111', overflow: 'hidden' }}>
         {vendor.banner_url ? (
-          <Image src={vendor.banner_url} alt={vendor.store_name} fill className="object-cover" />
+          <Image src={vendor.banner_url} alt={vendor.store_name} fill className="object-cover" sizes="100vw" priority />
         ) : (
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #1f1f1f, #444)' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #1a1a1a 0%, #333 100%)' }} />
         )}
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.6))' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.55))' }} />
       </div>
 
       {/* Store header */}
-      <div className="store-page-header" style={{ background: 'var(--white)', borderBottom: '1px solid var(--border)', padding: '20px 40px' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
-          <div style={{ width: 72, height: 72, borderRadius: 12, overflow: 'hidden', border: '3px solid var(--white)', marginTop: -36, flexShrink: 0, background: '#252525', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 800, color: 'var(--white)' }}>
-            {vendor.logo_url ? (
-              <Image src={vendor.logo_url} alt={vendor.store_name} width={72} height={72} className="object-cover" />
-            ) : getInitials(vendor.store_name)}
-          </div>
-          <div style={{ flex: 1 }}>
-            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 900, letterSpacing: '0.08em', color: 'var(--black)', marginBottom: 4 }}>
-              {vendor.store_name.toUpperCase()}
-              {vendor.is_verified && <span title="Dyqan i verifikuar" style={{ color: '#C9A84C', marginLeft: 8, fontSize: 16 }}>✓ VERIFIKUAR</span>}
-            </h1>
-            <p style={{ fontSize: 12, color: 'var(--gray-dark)' }}>
-              {vendor.category} · {vendor.city}
-              {avgRating > 0 && ` · ★ ${avgRating.toFixed(1)} (${reviews.length} recensione)`}
-              {` · ${products.length} produkte`}
-            </p>
-            {vendor.bio && (
-              <p style={{ fontSize: 13, color: 'var(--gray-dark)', marginTop: 8, lineHeight: 1.6, maxWidth: 600 }}>{vendor.bio}</p>
+      <div style={{ background: 'var(--white)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 40px' }}>
+          {/* Logo + name row */}
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 20, paddingBottom: 20 }}>
+            {/* Logo — overlaps banner */}
+            <div style={{
+              width: 84, height: 84, borderRadius: 16, overflow: 'hidden',
+              border: '3px solid var(--white)', marginTop: -42, flexShrink: 0,
+              background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 900, color: 'var(--white)',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
+            }}>
+              {vendor.logo_url ? (
+                <Image src={vendor.logo_url} alt={vendor.store_name} width={84} height={84} className="object-cover" />
+              ) : getInitials(vendor.store_name)}
+            </div>
+
+            {/* Name + meta */}
+            <div style={{ flex: 1, paddingBottom: 2 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 5 }}>
+                <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 900, letterSpacing: '0.08em', color: 'var(--black)', lineHeight: 1 }}>
+                  {vendor.store_name.toUpperCase()}
+                </h1>
+                {vendor.is_verified && (
+                  <span style={{ fontSize: 10, fontFamily: 'var(--font-display)', fontWeight: 700, letterSpacing: '0.08em', color: '#C9A84C', border: '1px solid #C9A84C', borderRadius: 4, padding: '2px 6px' }}>
+                    ✓ VERIFIKUAR
+                  </span>
+                )}
+                {plan === 'pro' && (
+                  <span style={{ fontSize: 10, fontFamily: 'var(--font-display)', fontWeight: 700, letterSpacing: '0.08em', background: '#111', color: '#fff', borderRadius: 4, padding: '2px 8px' }}>
+                    PRO
+                  </span>
+                )}
+              </div>
+              <p style={{ fontSize: 12, color: 'var(--gray-mid)', lineHeight: 1.5 }}>
+                {[vendor.category, vendor.city, avgRating > 0 ? `★ ${avgRating.toFixed(1)} (${reviews.length})` : null, `${products.length} produkte`].filter(Boolean).join(' · ')}
+              </p>
+            </div>
+
+            {/* WhatsApp button */}
+            {vendor.whatsapp && (
+              <a
+                href={`https://wa.me/${vendor.whatsapp.replace(/\D/g, '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4,
+                  padding: '9px 18px', background: '#25D366', color: '#fff',
+                  borderRadius: 8, textDecoration: 'none', flexShrink: 0,
+                  fontFamily: 'var(--font-display)', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em',
+                  boxShadow: '0 2px 8px rgba(37,211,102,0.3)',
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 32 32" fill="white" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M16 2C8.268 2 2 8.268 2 16c0 2.478.668 4.797 1.832 6.793L2 30l7.418-1.805A13.93 13.93 0 0 0 16 30c7.732 0 14-6.268 14-14S23.732 2 16 2z"/>
+                </svg>
+                WHATSAPP
+              </a>
             )}
           </div>
-          {vendor.whatsapp && (
-            <a
-              href={`https://wa.me/${vendor.whatsapp.replace(/\D/g, '')}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-secondary"
-              style={{ display: 'flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap' }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 21l1.65-3.8a9 9 0 113.4 2.9L3 21" /><path d="M9 10c0 5 3.5 7.5 6 5" />
-              </svg>
-              WHATSAPP
-            </a>
+
+          {/* Bio */}
+          {vendor.bio && (
+            <p style={{ fontSize: 13, color: 'var(--gray-dark)', lineHeight: 1.7, paddingBottom: 20, maxWidth: 680 }}>
+              {vendor.bio}
+            </p>
           )}
         </div>
       </div>
