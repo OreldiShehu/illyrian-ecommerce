@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function BrandSection() {
   return (
@@ -17,8 +18,15 @@ export default function BrandSection() {
         </p>
         <Link href="/stores" className="brand-cta">SHIKO TË GJITHA DYQANET</Link>
       </div>
-      <div className="brand-visual">
-        <div className="brand-visual-text">DISCOVER<br />COMPARE<br />ORDER</div>
+      <div className="brand-visual" style={{ position: 'relative', overflow: 'hidden', borderRadius: 10, padding: 0 }}>
+        <Image
+          src="/brand-store.jpg"
+          alt="Fashion store interior"
+          fill
+          className="object-cover"
+          sizes="(max-width: 900px) 100vw, 50vw"
+          quality={90}
+        />
       </div>
     </section>
   )

@@ -3,9 +3,10 @@
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import type { VendorWithPlan } from '@/types'
 import { getInitials } from '@/lib/utils'
+import { useLanguage } from '@/lib/i18n'
 
 type StoreProduct = { id: string; name: string; images: string[]; price: number; slug: string }
 
@@ -25,6 +26,7 @@ function getAvgRating(vendor: VendorWithPlan): number {
 
 export default function StoresPageClient({ vendors, cities, categories, productsByVendor, initialFilters }: Props) {
   const router = useRouter()
+  const { t } = useLanguage()
   const [search, setSearch] = useState(initialFilters.q ?? '')
   const [category, setCategory] = useState(initialFilters.category ?? 'all')
   const [city, setCity] = useState(initialFilters.city ?? 'all')
@@ -66,7 +68,7 @@ export default function StoresPageClient({ vendors, cities, categories, products
             </svg>
             <input
               type="text"
-              placeholder="Kërko dyqane…"
+              placeholder={t('stores.search_placeholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -77,7 +79,7 @@ export default function StoresPageClient({ vendors, cities, categories, products
             value={category}
             onChange={(e) => { setCategory(e.target.value); setPage(1) }}
           >
-            <option value="all">Të gjitha kategoritë</option>
+            <option value="all">{t('stores.all_categories')}</option>
             {categories.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
           <select
@@ -86,7 +88,7 @@ export default function StoresPageClient({ vendors, cities, categories, products
             value={city}
             onChange={(e) => { setCity(e.target.value); setPage(1) }}
           >
-            <option value="all">Të gjitha qytetet</option>
+            <option value="all">{t('stores.all_cities')}</option>
             {cities.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
           <select
@@ -95,12 +97,12 @@ export default function StoresPageClient({ vendors, cities, categories, products
             value={minRating}
             onChange={(e) => { setMinRating(Number(e.target.value)); setPage(1) }}
           >
-            <option value={0}>Çdo vlerësim</option>
+            <option value={0}>{t('stores.all_ratings')}</option>
             <option value={4}>★ 4+</option>
             <option value={4.5}>★ 4.5+</option>
           </select>
           <button type="submit" className="btn-primary" style={{ width: 'auto', padding: '11px 20px', flexShrink: 0 }}>
-            KËRKO
+            {t('stores.search_btn')}
           </button>
         </form>
       </div>
@@ -109,22 +111,22 @@ export default function StoresPageClient({ vendors, cities, categories, products
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
           <div>
             <h1 className="page-title" style={{ marginBottom: 0 }}>
-              {initialFilters.filter === 'offers' ? 'OFERTAT' : initialFilters.filter === 'new' ? 'TË REJA' : 'DYQANET'}
+              {initialFilters.filter === 'offers' ? t('stores.title_offers') : initialFilters.filter === 'new' ? t('stores.title_new') : t('stores.title')}
             </h1>
             {initialFilters.filter && (
               <p style={{ fontSize: 11, color: 'var(--gray-mid)', marginTop: 4, fontFamily: 'var(--font-display)', letterSpacing: '0.08em' }}>
-                {initialFilters.filter === 'offers' ? 'DYQANE ME FLASH SALE AKTIVE' : 'DYQANE TË SHTUARA NË 30 DITËT E FUNDIT'}
+                {initialFilters.filter === 'offers' ? t('stores.subtitle_offers') : t('stores.subtitle_new')}
               </p>
             )}
           </div>
           <p style={{ fontSize: 12, color: 'var(--gray-dark)' }}>
-            {filtered.length} dyqane
+            {filtered.length} {t('stores.count_suffix')}
           </p>
         </div>
 
         {paginated.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--gray-dark)', fontFamily: 'var(--font-display)', letterSpacing: '0.1em' }}>
-            ASNJË DYQAN NUK U GJEt
+            {t('stores.empty')}
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}>
@@ -185,17 +187,17 @@ export default function StoresPageClient({ vendors, cities, categories, products
                           style={{ textDecoration: 'none', flexShrink: 0 }}
                         >
                           <div style={{ width: 100 }}>
-                            <div style={{ width: 100, height: 100, borderRadius: 8, background: '#3a3a3a', position: 'relative', overflow: 'hidden', marginBottom: 6 }}>
+                            <div style={{ width: 100, height: 100, borderRadius: 8, background: 'var(--gray-light)', position: 'relative', overflow: 'hidden', marginBottom: 6 }}>
                               {p.images?.[0] ? (
                                 <Image src={p.images[0]} alt={p.name} fill className="object-cover" sizes="100px" />
                               ) : (
-                                <div style={{ width: '100%', height: '100%', background: '#3a3a3a' }} />
+                                <div style={{ width: '100%', height: '100%', background: 'var(--gray-light)' }} />
                               )}
                             </div>
-                            <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.8)', lineHeight: 1.3, marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 100 }}>
+                            <p style={{ fontSize: 10, color: 'var(--black)', lineHeight: 1.3, marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 100 }}>
                               {p.name}
                             </p>
-                            <p style={{ fontSize: 11, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--white)' }}>
+                            <p style={{ fontSize: 11, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--accent-dark)' }}>
                               €{p.price.toFixed(2)}
                             </p>
                           </div>
@@ -207,7 +209,7 @@ export default function StoresPageClient({ vendors, cities, categories, products
                   {/* Footer */}
                   <Link href={`/stores/${vendor.slug}`} style={{ textDecoration: 'none', marginTop: 'auto' }}>
                     <div className="store-footer">
-                      <span className="view-store-btn">SHIKO DYQANIN →</span>
+                      <span className="view-store-btn">{t('stores.view_store')}</span>
                     </div>
                   </Link>
                 </div>

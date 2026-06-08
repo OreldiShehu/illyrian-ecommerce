@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import SiteLayout from '@/components/layout/SiteLayout'
 import StoreProductsClient from './StoreProductsClient'
 import { getInitials, formatPrice } from '@/lib/utils'
+import { getT } from '@/lib/i18n-server'
 import type { Product, VendorReview, User } from '@/types'
 
 export const revalidate = 60
@@ -15,7 +16,7 @@ interface Props {
 
 export default async function StorePage({ params }: Props) {
   const { slug } = await params
-  const supabase = await createClient()
+  const [supabase, t] = await Promise.all([createClient(), getT()])
 
   const { data: vendor } = await supabase
     .from('vendors')
@@ -60,7 +61,7 @@ export default async function StorePage({ params }: Props) {
   return (
     <SiteLayout>
       {/* Banner */}
-      <div style={{ position: 'relative', height: 200, background: '#111', overflow: 'hidden' }}>
+      <div style={{ position: 'relative', height: 200, background: '#232F3E', overflow: 'hidden' }}>
         {vendor.banner_url ? (
           <Image src={vendor.banner_url} alt={vendor.store_name} fill className="object-cover" sizes="100vw" priority />
         ) : (
@@ -78,7 +79,7 @@ export default async function StorePage({ params }: Props) {
             <div style={{
               width: 84, height: 84, borderRadius: 16, overflow: 'hidden',
               border: '3px solid var(--white)', marginTop: -42, flexShrink: 0,
-              background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: '#232F3E', display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 900, color: 'var(--white)',
               boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
             }}>
@@ -95,7 +96,7 @@ export default async function StorePage({ params }: Props) {
                 </h1>
                 {vendor.is_verified && (
                   <span style={{ fontSize: 10, fontFamily: 'var(--font-display)', fontWeight: 700, letterSpacing: '0.08em', color: '#C9A84C', border: '1px solid #C9A84C', borderRadius: 4, padding: '2px 6px' }}>
-                    ✓ VERIFIKUAR
+                    {t('store.verified')}
                   </span>
                 )}
                 {plan === 'pro' && (
@@ -105,7 +106,7 @@ export default async function StorePage({ params }: Props) {
                 )}
               </div>
               <p style={{ fontSize: 12, color: 'var(--gray-mid)', lineHeight: 1.5 }}>
-                {[vendor.category, vendor.city, avgRating > 0 ? `★ ${avgRating.toFixed(1)} (${reviews.length})` : null, `${products.length} produkte`].filter(Boolean).join(' · ')}
+                {[vendor.category, vendor.city, avgRating > 0 ? `★ ${avgRating.toFixed(1)} (${reviews.length})` : null, `${products.length} ${t('store.products_unit')}`].filter(Boolean).join(' · ')}
               </p>
             </div>
 
@@ -148,7 +149,7 @@ export default async function StorePage({ params }: Props) {
         {reviews.length > 0 && (
           <div style={{ marginTop: 48 }}>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 800, letterSpacing: '0.2em', marginBottom: 20 }}>
-              RECENSIONE ({reviews.length})
+              {t('store.reviews')} ({reviews.length})
             </h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {reviews.map((review) => (

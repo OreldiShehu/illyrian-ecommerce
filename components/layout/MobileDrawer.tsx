@@ -33,9 +33,11 @@ export default function MobileDrawer({ open, onClose }: Props) {
         <ul>
           <li><Link href="/" onClick={onClose}>{t('nav.home')}</Link></li>
           <li><Link href="/stores" onClick={onClose}>{t('nav.stores')}</Link></li>
+          <li><Link href="/products" onClick={onClose}>{t('nav.products')}</Link></li>
           <li><Link href="/stores?filter=offers" onClick={onClose}>{t('nav.offers')}</Link></li>
           <li><Link href="/stores?filter=new" onClick={onClose}>{t('nav.new')}</Link></li>
-          <li><Link href="/vendor/onboarding" onClick={onClose}>{t('nav.sell')}</Link></li>
+          <li><Link href="/sell" onClick={onClose}>{t('nav.sell')}</Link></li>
+          <li><Link href="/track-order" onClick={onClose}>{t('nav.track')}</Link></li>
         </ul>
 
         {/* Account links */}

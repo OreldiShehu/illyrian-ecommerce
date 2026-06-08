@@ -72,6 +72,9 @@ function ResetPasswordForm() {
   return (
     <div className="auth-container">
       <div className="auth-card">
+        <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--gray-mid)', textDecoration: 'none', marginBottom: 20, fontFamily: 'var(--font-display)', letterSpacing: '0.08em', fontWeight: 600 }}>
+          ← HOME
+        </Link>
         <div className="auth-logo">
           <span className="auth-logo-main">MIO E-COMMERCE</span>
           <span className="auth-logo-sub">DISCOVER &middot; COMPARE &middot; ORDER</span>

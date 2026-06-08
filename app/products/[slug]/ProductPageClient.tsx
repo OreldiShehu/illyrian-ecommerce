@@ -8,6 +8,7 @@ import { toggleWishlist } from '@/app/actions/wishlist'
 import { submitReview } from '@/app/actions/review'
 import type { ProductWithVendor, Review, User } from '@/types'
 import { formatPrice, getInitials, isFlashSaleActive, calculateFlashPrice, getFlashSaleTimeLeft } from '@/lib/utils'
+import SizingGuide from '@/components/SizingGuide'
 
 interface Props {
   product: ProductWithVendor
@@ -105,7 +106,7 @@ export default function ProductPageClient({ product, reviews, isInWishlist: init
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'start' }}>
         {/* Images */}
         <div>
-          <div style={{ aspectRatio: '1', background: '#252525', borderRadius: 12, overflow: 'hidden', position: 'relative', marginBottom: 12 }}>
+          <div style={{ aspectRatio: '1', background: '#f0f1f2', borderRadius: 12, overflow: 'hidden', position: 'relative', marginBottom: 12 }}>
             {product.images[selectedImage] ? (
               <Image src={product.images[selectedImage]} alt={product.name} fill className="object-cover" priority quality={90} sizes="(max-width: 900px) 90vw, 50vw" />
             ) : (
@@ -120,7 +121,7 @@ export default function ProductPageClient({ product, reviews, isInWishlist: init
                 <button
                   key={i}
                   onClick={() => setSelectedImage(i)}
-                  style={{ width: 64, height: 64, borderRadius: 8, overflow: 'hidden', border: `2px solid ${selectedImage === i ? 'var(--black)' : 'var(--border)'}`, padding: 0, cursor: 'pointer', position: 'relative', background: '#252525' }}
+                  style={{ width: 64, height: 64, borderRadius: 8, overflow: 'hidden', border: `2px solid ${selectedImage === i ? 'var(--black)' : 'var(--border)'}`, padding: 0, cursor: 'pointer', position: 'relative', background: '#f0f1f2' }}
                 >
                   <Image src={img} alt="" fill className="object-cover" sizes="64px" />
                 </button>
@@ -148,7 +149,7 @@ export default function ProductPageClient({ product, reviews, isInWishlist: init
 
           {avgRating > 0 && (
             <p style={{ fontSize: 12, color: 'var(--gray-dark)', marginBottom: 12 }}>
-              {'★'.repeat(Math.round(avgRating))}{'☆'.repeat(5 - Math.round(avgRating))} {avgRating.toFixed(1)} ({reviews.length} recensione)
+              {'★'.repeat(Math.round(avgRating))}{'☆'.repeat(5 - Math.round(avgRating))} {avgRating.toFixed(1)} ({reviews.length} komente)
             </p>
           )}
 
@@ -172,9 +173,12 @@ export default function ProductPageClient({ product, reviews, isInWishlist: init
           {/* Sizes */}
           {product.sizes.length > 0 && (
             <div style={{ marginBottom: 20 }}>
-              <p style={{ fontFamily: 'var(--font-display)', fontSize: 10, fontWeight: 700, letterSpacing: '0.15em', color: 'var(--black)', marginBottom: 8 }}>
-                MADHËSIA: {selectedSize}
-              </p>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
+                <p style={{ fontFamily: 'var(--font-display)', fontSize: 10, fontWeight: 700, letterSpacing: '0.15em', color: 'var(--black)' }}>
+                  MADHËSIA: {selectedSize}
+                </p>
+                <SizingGuide />
+              </div>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 {product.sizes.map((size) => (
                   <button
@@ -257,7 +261,7 @@ export default function ProductPageClient({ product, reviews, isInWishlist: init
           <div style={{ borderTop: '1px solid var(--border)', paddingTop: 20, marginTop: 20 }}>
             <p style={{ fontFamily: 'var(--font-display)', fontSize: 10, fontWeight: 700, letterSpacing: '0.15em', marginBottom: 12 }}>SHITËSI</p>
             <Link href={`/stores/${product.vendors.slug}`} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ width: 44, height: 44, borderRadius: 10, background: '#252525', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 800, color: 'var(--white)', overflow: 'hidden', flexShrink: 0 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 10, background: '#232F3E', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 800, color: '#ffffff', overflow: 'hidden', flexShrink: 0 }}>
                 {product.vendors.logo_url ? (
                   <Image src={product.vendors.logo_url} alt={product.vendors.store_name} width={44} height={44} className="object-cover" />
                 ) : getInitials(product.vendors.store_name)}
@@ -291,14 +295,14 @@ export default function ProductPageClient({ product, reviews, isInWishlist: init
       {/* Reviews section */}
       <div style={{ borderTop: '1px solid var(--border)', paddingTop: 40, marginTop: 48 }}>
         <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 800, letterSpacing: '0.2em', marginBottom: 24 }}>
-          RECENSIONE ({reviews.length})
+          KOMENTE ({reviews.length})
         </h2>
 
         {/* Submit review */}
         {canReview && reviewStatus !== 'success' && (
           <div style={{ background: 'var(--off-white)', border: '1px solid var(--border)', borderRadius: 10, padding: 24, marginBottom: 32 }}>
             <p style={{ fontFamily: 'var(--font-display)', fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', marginBottom: 16 }}>
-              SHKRUAJ RECENSIONIN TUAj
+              SHKRUAJ KOMENTIN TËNd
             </p>
             <form onSubmit={handleReviewSubmit}>
               <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
@@ -323,7 +327,7 @@ export default function ProductPageClient({ product, reviews, isInWishlist: init
               />
               {reviewStatus === 'error' && <p className="form-error" style={{ marginBottom: 8 }}>{reviewError}</p>}
               <button type="submit" className="btn-primary" style={{ width: 'auto', padding: '10px 24px' }} disabled={reviewStatus === 'loading'}>
-                {reviewStatus === 'loading' ? 'DUKE DËRGUAR…' : 'DËRGO RECENSIONIN'}
+                {reviewStatus === 'loading' ? 'DUKE DËRGUAR…' : 'DËRGO KOMENTIN'}
               </button>
             </form>
           </div>
@@ -331,13 +335,13 @@ export default function ProductPageClient({ product, reviews, isInWishlist: init
 
         {reviewStatus === 'success' && (
           <div style={{ background: '#D1FAE5', border: '1px solid #34D399', borderRadius: 8, padding: '12px 20px', marginBottom: 24, fontSize: 13, color: '#065F46' }}>
-            Recensioni juaj u dërgua me sukses!
+            Komenti juaj u dërgua me sukses!
           </div>
         )}
 
         {reviews.length === 0 ? (
           <p style={{ fontSize: 13, color: 'var(--gray-dark)', fontStyle: 'italic' }}>
-            Ende asnjë recensionn. Bëni të parin!
+            Ende asnjë koment. Bëni të parin!
           </p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>

@@ -1,9 +1,11 @@
 'use client'
 
-import { useState, useActionState } from 'react'
+import { useState } from 'react'
 import { subscribeNewsletter } from '@/app/actions/newsletter'
+import { useLanguage } from '@/lib/i18n'
 
 export default function NewsletterSection() {
+  const { t } = useLanguage()
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
@@ -21,19 +23,19 @@ export default function NewsletterSection() {
       setTimeout(() => { setStatus('idle'); setMessage('') }, 3000)
     } else {
       setStatus('error')
-      setMessage(result.error ?? 'Gabim.')
+      setMessage(result.error ?? 'Error.')
       setTimeout(() => { setStatus('idle'); setMessage('') }, 3000)
     }
   }
 
   return (
     <section className="newsletter-section">
-      <h3 className="nl-title">BASHKOHU ME MIO</h3>
-      <p className="nl-sub">Merr njoftime për dyqane të reja, oferta ekskluzive dhe aksesoret javore</p>
+      <h3 className="nl-title">{t('nl.title')}</h3>
+      <p className="nl-sub">{t('nl.sub')}</p>
       <form className="nl-form" onSubmit={handleSubmit}>
         <input
           type="email"
-          placeholder="Email-i juaj"
+          placeholder={t('nl.placeholder')}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -42,9 +44,9 @@ export default function NewsletterSection() {
         <button
           type="submit"
           disabled={status === 'loading'}
-          style={status === 'success' ? { background: '#C9A84C', color: '#000' } : undefined}
+          style={status === 'success' ? { background: '#232F3E', color: '#fff' } : undefined}
         >
-          {status === 'loading' ? 'DUKE DËRGUAR…' : status === 'success' ? message : status === 'error' ? message : 'SUBSCRIBE'}
+          {status === 'loading' ? t('nl.sending') : status === 'success' ? message : status === 'error' ? message : t('nl.btn')}
         </button>
       </form>
     </section>

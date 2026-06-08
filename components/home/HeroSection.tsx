@@ -1,15 +1,17 @@
 import Link from 'next/link'
+import { getT } from '@/lib/i18n-server'
 
-export default function HeroSection() {
+export default async function HeroSection() {
+  const t = await getT()
   return (
     <section className="hero">
       <div className="hero-content">
-        <p className="hero-tag">MODA SHQIPTARE — FASHION ALBANIAN</p>
+        <p className="hero-tag">{t('hero.tag')}</p>
         <h1 className="hero-title">
           MIO<br />E-COMMERCE
         </h1>
-        <p className="hero-sub">DISCOVER &nbsp;·&nbsp; COMPARE &nbsp;·&nbsp; ORDER</p>
-        <Link href="/stores" className="hero-btn">EXPLORE STORES</Link>
+        <p className="hero-sub">{t('hero.sub')}</p>
+        <Link href="/stores" className="hero-btn">{t('hero.btn')}</Link>
       </div>
       <div className="hero-overlay" />
     </section>

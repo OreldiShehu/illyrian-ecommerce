@@ -42,7 +42,7 @@ export function generateReferralCode(): string {
 }
 
 export function generateOrderNumber(id: string): string {
-  return `ZZ-${id.slice(0, 8).toUpperCase()}`
+  return `AL-${id.slice(0, 8).toUpperCase()}`
 }
 
 export function calculateFlashPrice(price: number, discountPercent: number): number {

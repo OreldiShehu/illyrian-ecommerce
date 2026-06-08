@@ -6,6 +6,7 @@ import { useCartStore, selectItemCount } from '@/store/cart'
 import { createClient } from '@/lib/supabase/client'
 import { useLanguage } from '@/lib/i18n'
 import LanguageSwitcher from './LanguageSwitcher'
+import SearchOverlay from './SearchOverlay'
 import type { User } from '@supabase/supabase-js'
 
 interface Props {
@@ -16,6 +17,7 @@ interface Props {
 export default function Navbar({ mobileMenuOpen, onToggleMobile }: Props) {
   const [scrolled, setScrolled] = useState(false)
   const [user, setUser] = useState<User | null>(null)
+  const [searchOpen, setSearchOpen] = useState(false)
   const itemCount = useCartStore(selectItemCount)
   const openCart = useCartStore((s) => s.openCart)
   const supabase = createClient()
@@ -39,69 +41,107 @@ export default function Navbar({ mobileMenuOpen, onToggleMobile }: Props) {
     return () => subscription.unsubscribe()
   }, [supabase])
 
+  // Ctrl+K / Cmd+K to open search
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault()
+        setSearchOpen(true)
+      }
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [])
+
   const handleSignOut = async () => {
     await supabase.auth.signOut()
     window.location.href = '/'
   }
 
   return (
-    <nav className={`navbar${scrolled ? ' scrolled' : ''}`} id="navbar">
-      <div className="nav-left">
-        <button
-          className={`hamburger${mobileMenuOpen ? ' open' : ''}`}
-          onClick={onToggleMobile}
-          aria-label="Menu"
-        >
-          <span /><span /><span />
-        </button>
-        <ul className="nav-links">
-          <li><Link href="/" className="active">{t('nav.home')}</Link></li>
-          <li><Link href="/stores">{t('nav.stores')}</Link></li>
-          <li><Link href="/stores?filter=offers">{t('nav.offers')}</Link></li>
-          <li><Link href="/stores?filter=new">{t('nav.new')}</Link></li>
-          <li><Link href="/vendor/onboarding">{t('nav.sell')}</Link></li>
-        </ul>
-      </div>
-
-      <div className="nav-logo">
-        <span className="logo-main">MIO E-COMMERCE</span>
-        <span className="logo-sub">DISCOVER &nbsp;·&nbsp; COMPARE &nbsp;·&nbsp; ORDER</span>
-      </div>
-
-      <div className="nav-right">
-        <div className="lang-switcher-nav">
-          <LanguageSwitcher />
+    <>
+      <nav className={`navbar${scrolled ? ' scrolled' : ''}`} id="navbar">
+        <div className="nav-left">
+          <button
+            className={`hamburger${mobileMenuOpen ? ' open' : ''}`}
+            onClick={onToggleMobile}
+            aria-label="Menu"
+          >
+            <span /><span /><span />
+          </button>
+          <ul className="nav-links">
+            <li><Link href="/" className="active">{t('nav.home')}</Link></li>
+            <li><Link href="/stores">{t('nav.stores')}</Link></li>
+            <li><Link href="/products">{t('nav.products')}</Link></li>
+            <li><Link href="/stores?filter=offers">{t('nav.offers')}</Link></li>
+            <li><Link href="/stores?filter=new">{t('nav.new')}</Link></li>
+            <li><Link href="/sell">{t('nav.sell')}</Link></li>
+            <li><Link href="/track-order">{t('nav.track')}</Link></li>
+          </ul>
         </div>
-        {user ? (
-          <>
-            <Link href="/account">{t('nav.account')}</Link>
-            <button
-              onClick={handleSignOut}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-display)', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', color: 'var(--black)' }}
-            >
-              {t('nav.logout')}
-            </button>
-          </>
-        ) : (
-          <Link href="/auth/login">{t('nav.login')}</Link>
-        )}
-        <Link href="/account" className="icon-btn" title={t('nav.account')}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-            <circle cx="12" cy="8" r="4" />
-            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-          </svg>
-        </Link>
-        <button onClick={openCart} className="icon-btn bag-btn" title={t('nav.cart')} style={{ background: 'none', border: 'none', cursor: 'pointer', position: 'relative', padding: 0 }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <path d="M16 10a4 4 0 01-8 0" />
-          </svg>
-          {itemCount > 0 && (
-            <span className="bag-count">{itemCount > 99 ? '99+' : itemCount}</span>
+
+        <div className="nav-logo">
+          <span className="logo-main">MIO E-COMMERCE</span>
+          <span className="logo-sub">DISCOVER &nbsp;·&nbsp; COMPARE &nbsp;·&nbsp; ORDER</span>
+        </div>
+
+        <div className="nav-right">
+          <div className="lang-switcher-nav">
+            <LanguageSwitcher />
+          </div>
+
+          {/* Search icon */}
+          <button
+            onClick={() => setSearchOpen(true)}
+            className="icon-btn"
+            title={`${t('search.title')} (Ctrl+K)`}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+            </svg>
+          </button>
+
+          {/* Wishlist icon */}
+          <Link href="/wishlist" className="icon-btn" title={t('nav.wishlist')}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+            </svg>
+          </Link>
+
+          {user ? (
+            <>
+              <Link href="/account">{t('nav.account')}</Link>
+              <button
+                onClick={handleSignOut}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-display)', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', color: 'var(--black)' }}
+              >
+                {t('nav.logout')}
+              </button>
+            </>
+          ) : (
+            <Link href="/auth/login">{t('nav.login')}</Link>
           )}
-        </button>
-      </div>
-    </nav>
+          <Link href="/account" className="icon-btn" title={t('nav.account')}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+            </svg>
+          </Link>
+          <button onClick={openCart} className="icon-btn bag-btn" title={t('nav.cart')} style={{ background: 'none', border: 'none', cursor: 'pointer', position: 'relative', padding: 0 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <path d="M16 10a4 4 0 01-8 0" />
+            </svg>
+            {itemCount > 0 && (
+              <span className="bag-count">{itemCount > 99 ? '99+' : itemCount}</span>
+            )}
+          </button>
+        </div>
+      </nav>
+
+      {searchOpen && <SearchOverlay onClose={() => setSearchOpen(false)} />}
+    </>
   )
 }
