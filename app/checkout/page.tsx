@@ -67,14 +67,12 @@ export default function CheckoutPage() {
         items,
       })
 
-      if (result && !result.success) {
-        setError(result.error ?? 'Porosia dështoi.')
+      if (!result || !result.success) {
+        setError(result?.error ?? 'Porosia dështoi. Provoni përsëri.')
         setSubmitting(false)
       }
-      // On success, action redirects to /order-confirmed/[id]
-    } catch (e: unknown) {
-      // Next.js redirect() throws internally — let it propagate so navigation works
-      if (typeof e === 'object' && e !== null && 'digest' in e) throw e
+      // On success the server action calls redirect() which navigates the page
+    } catch {
       setError('Gabim i papritur. Provoni përsëri.')
       setSubmitting(false)
     }

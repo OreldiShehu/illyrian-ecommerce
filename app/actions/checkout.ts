@@ -22,6 +22,7 @@ interface CheckoutData {
 }
 
 export async function placeOrder(data: CheckoutData): Promise<ActionResult<{ orderId: string }>> {
+  let createdOrderId: string | null = null
   try {
   const supabase = await createClient()
   const admin = createAdminClient()
@@ -236,13 +237,14 @@ export async function placeOrder(data: CheckoutData): Promise<ActionResult<{ ord
     } catch { /* non-fatal */ }
   }
 
-  redirect(`/order-confirmed/${order.id}`)
+  createdOrderId = order.id
   } catch (e: unknown) {
-    // redirect() throws internally — rethrow so Next.js handles navigation
-    if (typeof e === 'object' && e !== null && 'digest' in e) throw e
     console.error('[placeOrder] unexpected error:', e)
     return { success: false, error: String(e instanceof Error ? e.message : e) }
   }
+
+  // redirect() must be called outside try/catch — it throws NEXT_REDIRECT internally
+  redirect(`/order-confirmed/${createdOrderId}`)
 }
 
 export async function validateCoupon(code: string, subtotal: number): Promise<ActionResult<{ discount: number; coupon: { code: string; discount_type: string; discount_value: number; min_order: number } }>> {
