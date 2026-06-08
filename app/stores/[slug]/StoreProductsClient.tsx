@@ -66,13 +66,13 @@ export default function StoreProductsClient({ products }: Props) {
 
             return (
               <Link key={product.id} href={`/products/${product.slug}`} style={{ display: 'block' }}>
-                <div style={{ background: '#252525', borderRadius: 10, overflow: 'hidden', transition: 'transform 0.2s' }} className="product-card-grid">
-                  <div style={{ aspectRatio: '1', background: 'linear-gradient(145deg, #252525, #111)', position: 'relative' }}>
+                <div style={{ background: 'var(--white)', borderRadius: 10, overflow: 'hidden', border: '1px solid var(--border)', transition: 'box-shadow 0.2s, transform 0.2s' }} className="product-card-grid">
+                  <div style={{ aspectRatio: '1', background: 'linear-gradient(145deg, #f0f1f2, #e5e7eb)', position: 'relative' }}>
                     {product.images[0] ? (
                       <Image src={product.images[0]} alt={product.name} fill className="object-cover" quality={85} sizes="(max-width: 540px) 45vw, (max-width: 900px) 30vw, 280px" />
                     ) : (
                       <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ fontFamily: 'var(--font-display)', fontSize: 11, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em' }}>
+                        <span style={{ fontFamily: 'var(--font-display)', fontSize: 11, color: 'var(--gray-mid)', letterSpacing: '0.1em' }}>
                           {product.category?.toUpperCase().slice(0, 6)}
                         </span>
                       </div>
