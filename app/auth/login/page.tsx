@@ -126,6 +126,11 @@ function LoginForm() {
         </form>
 
         <div style={{ textAlign: 'center', marginTop: 20 }}>
+          <div style={{ marginBottom: 16 }}>
+            <Link href="/auth/forgot-password" style={{ fontSize: 12, color: 'var(--gray-mid)', textDecoration: 'underline' }}>
+              {t('auth.forgot_password')}
+            </Link>
+          </div>
           <p style={{ fontSize: 12, color: 'var(--gray-dark)', marginBottom: 8 }}>
             {t('auth.no_account')}
           </p>
