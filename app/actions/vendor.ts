@@ -207,8 +207,10 @@ export async function uploadProductImage(formData: FormData): Promise<ActionResu
   try {
     const result = await uploadImage(file, 'products', 'product')
     return { success: true, data: { url: result.secure_url } }
-  } catch {
-    return { success: false, error: 'Ngarkimi dështoi. Provoni përsëri.' }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
+    console.error('[uploadProductImage]', msg)
+    return { success: false, error: msg }
   }
 }
 

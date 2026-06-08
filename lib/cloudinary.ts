@@ -38,7 +38,7 @@ export async function uploadImage(
 
   const result = await cloudinary.uploader.upload(base64, {
     folder: `mio-ecommerce/${folder}`,
-    transformation: TRANSFORMS[transform],
+    resource_type: 'image',
   })
 
   return {
