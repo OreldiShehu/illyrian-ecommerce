@@ -9,7 +9,7 @@ const STORAGE_KEY = 'mio-locale'
 const dict: Record<Locale, Record<string, string>> = {
   sq: {
     // Nav
-    'nav.home': 'BALLINA',
+    'nav.home': 'HOME',
     'nav.stores': 'DYQANET',
     'nav.offers': 'OFERTAT',
     'nav.new': 'TË REJA',
