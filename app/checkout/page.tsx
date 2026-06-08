@@ -174,7 +174,7 @@ export default function CheckoutPage() {
                   {items.map((item) => (
                     <div key={`${item.productId}-${item.size}-${item.color}`} style={{ display: 'flex', gap: 12, marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid var(--gray-light)' }}>
                       <div style={{ width: 56, height: 56, borderRadius: 6, background: '#252525', position: 'relative', flexShrink: 0, overflow: 'hidden' }}>
-                        {item.image && <Image src={item.image} alt={item.name} fill className="object-cover" sizes="56px" unoptimized />}
+                        {item.image && <Image src={item.image} alt={item.name} fill className="object-cover" sizes="56px" />}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>

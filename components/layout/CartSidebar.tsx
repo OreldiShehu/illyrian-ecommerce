@@ -75,7 +75,7 @@ export default function CartSidebar() {
             items.map((item) => (
               <div key={`${item.productId}-${item.size}-${item.color}`} style={{ display: 'flex', gap: 14, paddingBottom: 16, marginBottom: 16, borderBottom: '1px solid var(--gray-light)' }}>
                 <div style={{ width: 72, height: 72, borderRadius: 8, background: '#f3f3f3', position: 'relative', flexShrink: 0, overflow: 'hidden' }}>
-                  {item.image && <Image src={item.image} alt={item.name} fill className="object-cover" sizes="72px" unoptimized />}
+                  {item.image && <Image src={item.image} alt={item.name} fill className="object-cover" sizes="72px" />}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>

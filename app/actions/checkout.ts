@@ -149,11 +149,12 @@ export async function placeOrder(data: CheckoutData): Promise<ActionResult<{ ord
     })
 
     // Deduct stock
-    await admin.rpc('decrement_stock', { product_id: item.productId, amount: item.quantity }).catch(() => {
-      admin.from('products')
+    const { error: rpcStockErr } = await admin.rpc('decrement_stock', { product_id: item.productId, amount: item.quantity })
+    if (rpcStockErr) {
+      await admin.from('products')
         .update({ stock: Math.max(0, (item.stock ?? 0) - item.quantity) })
         .eq('id', item.productId)
-    })
+    }
 
     if (vendor && vendorUser) {
       if (!vendorMap.has(product.vendor_id)) {
@@ -165,10 +166,11 @@ export async function placeOrder(data: CheckoutData): Promise<ActionResult<{ ord
 
   // Increment coupon usage
   if (couponId) {
-    await admin.rpc('increment_coupon_uses', { coupon_id: couponId }).catch(async () => {
+    const { error: rpcCouponErr } = await admin.rpc('increment_coupon_uses', { coupon_id: couponId })
+    if (rpcCouponErr) {
       const { data: c } = await admin.from('coupons').select('uses_count').eq('id', couponId!).single()
       await admin.from('coupons').update({ uses_count: (c?.uses_count ?? 0) + 1 }).eq('id', couponId!)
-    })
+    }
   }
 
   // Award loyalty points (1 per €1) for logged-in customers only
