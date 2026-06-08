@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { createProduct, updateProduct, deleteProduct } from '@/app/actions/vendor'
+import { createProduct, updateProduct, deleteProduct, uploadProductImage } from '@/app/actions/vendor'
 import { formatPrice, slugify } from '@/lib/utils'
 import { PRODUCT_CATEGORIES } from '@/types'
 import type { Product, Vendor } from '@/types'
@@ -56,7 +56,9 @@ export default function VendorProductsPage() {
   const [formError, setFormError] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
   const [csvUploading, setCsvUploading] = useState(false)
+  const [imageUploading, setImageUploading] = useState(false)
   const csvRef = useRef<HTMLInputElement>(null)
+  const imageRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     async function load() {
@@ -165,6 +167,31 @@ export default function VendorProductsPage() {
     } else {
       alert(result.error ?? 'Gabim gjatë fshirjes. Provoni përsëri.')
     }
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? [])
+    if (!files.length) return
+    setImageUploading(true)
+    const urls: string[] = []
+    for (const file of files) {
+      const fd = new FormData()
+      fd.append('file', file)
+      const result = await uploadProductImage(fd)
+      if (result.success && result.data) {
+        urls.push(result.data.url)
+      } else {
+        alert(result.error ?? 'Ngarkimi dështoi.')
+      }
+    }
+    if (urls.length) {
+      setForm((f) => ({
+        ...f,
+        images: f.images ? f.images + '\n' + urls.join('\n') : urls.join('\n'),
+      }))
+    }
+    setImageUploading(false)
+    if (imageRef.current) imageRef.current.value = ''
   }
 
   const handleCsvUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -406,8 +433,51 @@ export default function VendorProductsPage() {
                   <input type="text" className="form-input" value={form.colors} onChange={(e) => setForm((f) => ({ ...f, colors: e.target.value }))} placeholder="E zezë, E bardhë, E kuqe" />
                 </div>
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label">URL-të e imazheve (një për rresht)</label>
-                  <textarea className="form-textarea" value={form.images} onChange={(e) => setForm((f) => ({ ...f, images: e.target.value }))} rows={3} placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg" />
+                  <label className="form-label">IMAZHET E PRODUKTIT</label>
+                  {/* Image previews */}
+                  {form.images && (
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
+                      {form.images.split('\n').filter(Boolean).map((url, i) => (
+                        <div key={i} style={{ position: 'relative', width: 72, height: 72 }}>
+                          <div style={{ width: 72, height: 72, borderRadius: 6, background: '#f3f3f3', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                            <Image src={url} alt="" fill className="object-cover" sizes="72px" unoptimized />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setForm((f) => ({ ...f, images: f.images.split('\n').filter((u, idx) => idx !== i).join('\n') }))}
+                            style={{ position: 'absolute', top: -6, right: -6, width: 18, height: 18, borderRadius: '50%', background: '#dc2626', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 12, lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          >×</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {/* Upload from device */}
+                  <input
+                    ref={imageRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    style={{ display: 'none' }}
+                    onChange={handleImageUpload}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => imageRef.current?.click()}
+                    disabled={imageUploading}
+                    className="btn-secondary"
+                    style={{ width: 'auto', padding: '8px 16px', fontSize: 11, marginBottom: 8 }}
+                  >
+                    {imageUploading ? 'DUKE NGARKUAR…' : '📷 NGARKO FOTO NGA PAJISJA'}
+                  </button>
+                  {/* Manual URL fallback */}
+                  <textarea
+                    className="form-textarea"
+                    value={form.images}
+                    onChange={(e) => setForm((f) => ({ ...f, images: e.target.value }))}
+                    rows={2}
+                    placeholder="Ose ngjit URL-të e imazheve (një për rresht)"
+                    style={{ marginTop: 4 }}
+                  />
                 </div>
                 <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <input

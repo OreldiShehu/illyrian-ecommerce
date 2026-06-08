@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendOrderStatusUpdate } from '@/lib/resend'
 import { slugify } from '@/lib/utils'
+import { uploadImage } from '@/lib/cloudinary'
 import type { ActionResult } from '@/types'
 
 function parseList(raw: string | null): string[] {
@@ -192,6 +193,23 @@ export async function deleteProduct(formData: FormData): Promise<ActionResult> {
 
   revalidatePath('/vendor/products')
   return { success: true }
+}
+
+export async function uploadProductImage(formData: FormData): Promise<ActionResult<{ url: string }>> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { success: false, error: 'Nuk jeni të kyçur.' }
+
+  const file = formData.get('file') as File
+  if (!file || file.size === 0) return { success: false, error: 'Nuk ka skedar.' }
+  if (!file.type.startsWith('image/')) return { success: false, error: 'Skedari duhet të jetë imazh.' }
+
+  try {
+    const result = await uploadImage(file, 'products', 'product')
+    return { success: true, data: { url: result.secure_url } }
+  } catch {
+    return { success: false, error: 'Ngarkimi dështoi. Provoni përsëri.' }
+  }
 }
 
 export async function updateOrderStatus(formData: FormData): Promise<ActionResult> {
