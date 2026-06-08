@@ -9,19 +9,21 @@
   --rich-earth: #bfbfbf;
   --soft-mushroom: #e6e6e6;
   --warm-putty: #ffffff;
-  --gentle-bone: #f4f4f4;
-  --white-rgb: 244,244,244;
+  --gentle-bone: #F0F9FF;
+  --white-rgb: 240,249,255;
 
-  --black: #000000;
+  --black: #0F172A;
   --white: #ffffff;
-  --off-white: var(--gentle-bone);
-  --gray-light: #e0e0e0;
-  --gray-mid: #b2b2b2;
-  --gray-dark: #8a8a8a;
-  --accent: #000000;
-  --accent-dark: #333333;
+  --off-white: #F0F9FF;
+  --gray-light: #E0F2FE;
+  --gray-mid: #94A3B8;
+  --gray-dark: #64748B;
+  --accent: #0EA5E9;
+  --accent-dark: #0284C7;
+  --blue-light: #E0F2FE;
+  --navy: #0C2340;
   --gold: #C9A84C;
-  --border: #d8d8d8;
+  --border: #BAE6FD;
   --font-display: 'Barlow Condensed', sans-serif;
   --font-body: 'Barlow', sans-serif;
   --nav-height: 58px;
@@ -48,7 +50,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 .announce-bar {
-  background: var(--black);
+  background: #0EA5E9;
   color: var(--white);
   font-family: var(--font-display);
   font-size: 11px;
@@ -115,7 +117,7 @@ a { text-decoration: none; color: inherit; }
   display: block;
   width: 22px;
   height: 1.5px;
-  background: var(--black);
+  background: #0F172A;
   transition: var(--transition);
 }
 .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 4px); }
@@ -138,7 +140,7 @@ a { text-decoration: none; color: inherit; }
   border-bottom: 1.5px solid transparent;
 }
 .nav-links a:hover,
-.nav-links a.active { color: var(--black); border-bottom-color: var(--black); }
+.nav-links a.active { color: #0EA5E9; border-bottom-color: #0EA5E9; }
 
 .nav-logo {
   position: absolute;
@@ -221,13 +223,13 @@ a { text-decoration: none; color: inherit; }
   left: -100%;
   width: min(85vw, 320px);
   height: 100vh;
-  background: var(--white);
+  background: #0C2340;
   z-index: 200;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
   transition: left 0.28s cubic-bezier(0.4,0,0.2,1);
-  box-shadow: 4px 0 24px rgba(0,0,0,0.08);
+  box-shadow: 4px 0 24px rgba(0,0,0,0.2);
 }
 .mobile-drawer.open { left: 0; }
 
@@ -271,7 +273,7 @@ a { text-decoration: none; color: inherit; }
   padding: 8px 0;
   flex-shrink: 0;
 }
-.mobile-drawer ul li { border-bottom: 1px solid var(--gray-light); }
+.mobile-drawer ul li { border-bottom: 1px solid rgba(255,255,255,0.08); }
 .mobile-drawer ul li a {
   display: block;
   padding: 16px 24px;
@@ -279,10 +281,10 @@ a { text-decoration: none; color: inherit; }
   font-size: 15px;
   font-weight: 700;
   letter-spacing: 0.14em;
-  color: var(--black);
+  color: rgba(255,255,255,0.85);
   transition: background 0.15s;
 }
-.mobile-drawer ul li a:hover { background: var(--off-white); }
+.mobile-drawer ul li a:hover { background: rgba(255,255,255,0.08); }
 
 .drawer-bottom {
   display: flex;
@@ -837,8 +839,8 @@ a { text-decoration: none; color: inherit; }
    FOOTER
    ========================================= */
 .footer {
-  background: #161616;
-  border-top: 1px solid rgba(var(--white-rgb),0.16);
+  background: #0C2340;
+  border-top: 1px solid rgba(255,255,255,0.1);
 }
 .footer-inner {
   display: grid;
@@ -1081,7 +1083,7 @@ a { text-decoration: none; color: inherit; }
 
 .btn-primary {
   width: 100%;
-  background: var(--black);
+  background: #0EA5E9;
   color: var(--white);
   font-family: var(--font-display);
   font-size: 11px;
@@ -1093,7 +1095,7 @@ a { text-decoration: none; color: inherit; }
   border-radius: 6px;
   transition: background var(--transition);
 }
-.btn-primary:hover { background: #333; }
+.btn-primary:hover { background: #0284C7; }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .btn-secondary {
@@ -1109,7 +1111,7 @@ a { text-decoration: none; color: inherit; }
   border-radius: 6px;
   transition: border-color var(--transition);
 }
-.btn-secondary:hover { border-color: var(--black); }
+.btn-secondary:hover { border-color: #0EA5E9; color: #0EA5E9; }
 
 .btn-gold {
   background: var(--gold);
@@ -1224,7 +1226,7 @@ a { text-decoration: none; color: inherit; }
 /* Sidebar nav (vendor/admin) */
 .sidebar {
   width: 220px;
-  background: var(--black);
+  background: #0C2340;
   min-height: 100vh;
   padding: 24px 0;
   flex-shrink: 0;
