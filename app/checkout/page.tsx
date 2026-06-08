@@ -28,6 +28,8 @@ export default function CheckoutPage() {
   const total = useCartStore(selectTotal)
   const applyCoupon = useCartStore((s) => s.applyCoupon)
   const removeCoupon = useCartStore((s) => s.removeCoupon)
+  const removeItem = useCartStore((s) => s.removeItem)
+  const updateQuantity = useCartStore((s) => s.updateQuantity)
   const clearCart = useCartStore((s) => s.clearCart)
 
   useEffect(() => { setMounted(true) }, [])
@@ -70,7 +72,12 @@ export default function CheckoutPage() {
         setSubmitting(false)
       }
       // On success, action redirects to /order-confirmed/[id]
-    } catch {
+    } catch (e: unknown) {
+      // Next.js redirect() throws NEXT_REDIRECT internally — let it propagate
+      if (typeof e === 'object' && e !== null && 'digest' in e &&
+          String((e as { digest: unknown }).digest).startsWith('NEXT_REDIRECT')) {
+        throw e
+      }
       setError('Porosia dështoi. Kontrolloni lidhjen dhe provoni përsëri.')
       setSubmitting(false)
     }
@@ -170,16 +177,28 @@ export default function CheckoutPage() {
                   {items.map((item) => (
                     <div key={`${item.productId}-${item.size}-${item.color}`} style={{ display: 'flex', gap: 12, marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid var(--gray-light)' }}>
                       <div style={{ width: 56, height: 56, borderRadius: 6, background: '#252525', position: 'relative', flexShrink: 0, overflow: 'hidden' }}>
-                        {item.image && <Image src={item.image} alt={item.name} fill className="object-cover" sizes="56px" />}
+                        {item.image && <Image src={item.image} alt={item.name} fill className="object-cover" sizes="56px" unoptimized />}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontSize: 12, fontWeight: 600, lineHeight: 1.3 }}>{item.name}</p>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <p style={{ fontSize: 12, fontWeight: 600, lineHeight: 1.3 }}>{item.name}</p>
+                          <button
+                            type="button"
+                            onClick={() => removeItem(item.productId, item.size, item.color)}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--gray-mid)', fontSize: 16, lineHeight: 1, padding: '0 0 0 8px', flexShrink: 0 }}
+                            title="Hiq"
+                          >×</button>
+                        </div>
                         {(item.size || item.color) && (
                           <p style={{ fontSize: 11, color: 'var(--gray-mid)' }}>
                             {[item.size, item.color].filter(Boolean).join(' · ')}
                           </p>
                         )}
-                        <p style={{ fontSize: 11, color: 'var(--gray-dark)' }}>Sasia: {item.quantity}</p>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                          <button type="button" onClick={() => updateQuantity(item.productId, item.quantity - 1, item.size, item.color)} style={{ width: 22, height: 22, borderRadius: 4, border: '1px solid var(--border)', background: 'none', cursor: 'pointer', fontSize: 14, lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>−</button>
+                          <span style={{ fontSize: 12, minWidth: 16, textAlign: 'center' }}>{item.quantity}</span>
+                          <button type="button" onClick={() => updateQuantity(item.productId, item.quantity + 1, item.size, item.color)} style={{ width: 22, height: 22, borderRadius: 4, border: '1px solid var(--border)', background: 'none', cursor: 'pointer', fontSize: 14, lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
+                        </div>
                       </div>
                       <p style={{ fontFamily: 'var(--font-display)', fontSize: 13, fontWeight: 700, flexShrink: 0 }}>
                         {formatPrice(item.price * item.quantity)}
