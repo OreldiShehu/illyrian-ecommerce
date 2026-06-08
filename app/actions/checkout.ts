@@ -7,6 +7,7 @@ import {
   sendOrderConfirmation,
   sendNewOrderAlert,
 } from '@/lib/resend'
+import { sendWhatsAppToVendor } from '@/lib/twilio'
 import { calculateLoyaltyPoints, getDeliveryFee } from '@/lib/utils'
 import type { ActionResult, CartItem } from '@/types'
 
@@ -112,7 +113,7 @@ export async function placeOrder(data: CheckoutData): Promise<ActionResult<{ ord
   }
 
   // Group items by vendor for notifications
-  const vendorMap = new Map<string, { email: string; userId: string; storeName: string; items: typeof data.items }>()
+  const vendorMap = new Map<string, { email: string; userId: string; storeName: string; whatsapp: string | null; items: typeof data.items }>()
 
   // Create order items, deduct stock, build vendor map
   for (const item of data.items) {
@@ -126,7 +127,7 @@ export async function placeOrder(data: CheckoutData): Promise<ActionResult<{ ord
 
     const { data: vendorRow } = await admin
       .from('vendors')
-      .select('id, store_name, commission_rate, user_id')
+      .select('id, store_name, commission_rate, user_id, whatsapp')
       .eq('id', product.vendor_id)
       .single()
 
@@ -161,6 +162,7 @@ export async function placeOrder(data: CheckoutData): Promise<ActionResult<{ ord
           email: vendorUser.email,
           userId: vendorRow.user_id,
           storeName: vendorRow.store_name,
+          whatsapp: vendorRow.whatsapp ?? null,
           items: [],
         })
       }
@@ -246,6 +248,19 @@ export async function placeOrder(data: CheckoutData): Promise<ActionResult<{ ord
         total,
       })
     } catch { /* non-fatal */ }
+    // WhatsApp notification for vendor
+    if (vendor.whatsapp) {
+      try {
+        await sendWhatsAppToVendor({
+          to: vendor.whatsapp,
+          storeName: vendor.storeName,
+          orderId: order.id,
+          items: vendor.items.map((i) => ({ name: i.name, quantity: i.quantity })),
+          city: data.city,
+          total,
+        })
+      } catch { /* non-fatal */ }
+    }
   }
 
   createdOrderId = order.id
