@@ -73,12 +73,9 @@ export default function CheckoutPage() {
       }
       // On success, action redirects to /order-confirmed/[id]
     } catch (e: unknown) {
-      // Next.js redirect() throws NEXT_REDIRECT internally — let it propagate
-      if (typeof e === 'object' && e !== null && 'digest' in e &&
-          String((e as { digest: unknown }).digest).startsWith('NEXT_REDIRECT')) {
-        throw e
-      }
-      setError('Porosia dështoi. Kontrolloni lidhjen dhe provoni përsëri.')
+      // Next.js redirect() throws internally — let it propagate so navigation works
+      if (typeof e === 'object' && e !== null && 'digest' in e) throw e
+      setError('Gabim i papritur. Provoni përsëri.')
       setSubmitting(false)
     }
   }
