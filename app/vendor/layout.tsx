@@ -2,14 +2,6 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 
-const NAV_ITEMS = [
-  { href: '/vendor/dashboard', label: 'PANELI', icon: '◈' },
-  { href: '/vendor/products', label: 'PRODUKTET', icon: '◧' },
-  { href: '/vendor/orders', label: 'POROSITË', icon: '◎' },
-  { href: '/vendor/analytics', label: 'ANALITIKA', icon: '◉' },
-  { href: '/vendor/commissions', label: 'KOMISIONET', icon: '◇' },
-]
-
 export default async function VendorLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -19,6 +11,23 @@ export default async function VendorLayout({ children }: { children: React.React
   if (userData?.role !== 'vendor' && userData?.role !== 'admin') redirect('/')
 
   const { data: vendor } = await supabase.from('vendors').select('store_name, status').eq('user_id', user.id).single()
+
+  // Unread notifications count
+  const { count: unreadCount } = await supabase
+    .from('notifications')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', user.id)
+    .eq('read', false)
+
+  const unread = unreadCount ?? 0
+
+  const NAV_ITEMS = [
+    { href: '/vendor/dashboard', label: 'PANELI', icon: '◈', badge: 0 },
+    { href: '/vendor/products', label: 'PRODUKTET', icon: '◧', badge: 0 },
+    { href: '/vendor/orders', label: 'POROSITË', icon: '◎', badge: unread },
+    { href: '/vendor/analytics', label: 'ANALITIKA', icon: '◉', badge: 0 },
+    { href: '/vendor/commissions', label: 'KOMISIONET', icon: '◇', badge: 0 },
+  ]
 
   return (
     <div className="dashboard-layout">
@@ -36,9 +45,26 @@ export default async function VendorLayout({ children }: { children: React.React
         <ul className="sidebar-nav">
           {NAV_ITEMS.map((item) => (
             <li key={item.href}>
-              <Link href={item.href}>
-                <span>{item.icon}</span>
-                {item.label}
+              <Link href={item.href} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span>{item.icon}</span>
+                  {item.label}
+                </span>
+                {item.badge > 0 && (
+                  <span style={{
+                    background: '#ef4444',
+                    color: '#fff',
+                    borderRadius: '999px',
+                    fontSize: 9,
+                    fontWeight: 700,
+                    padding: '2px 6px',
+                    minWidth: 18,
+                    textAlign: 'center',
+                    lineHeight: 1.4,
+                  }}>
+                    {item.badge > 99 ? '99+' : item.badge}
+                  </span>
+                )}
               </Link>
             </li>
           ))}

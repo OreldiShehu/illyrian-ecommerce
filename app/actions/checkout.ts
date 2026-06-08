@@ -112,7 +112,7 @@ export async function placeOrder(data: CheckoutData): Promise<ActionResult<{ ord
   }
 
   // Group items by vendor for notifications
-  const vendorMap = new Map<string, { email: string; storeName: string; items: typeof data.items }>()
+  const vendorMap = new Map<string, { email: string; userId: string; storeName: string; items: typeof data.items }>()
 
   // Create order items, deduct stock, build vendor map
   for (const item of data.items) {
@@ -124,19 +124,17 @@ export async function placeOrder(data: CheckoutData): Promise<ActionResult<{ ord
 
     if (!product) continue
 
-    const { data: vendor } = await admin
+    const { data: vendorRow } = await admin
       .from('vendors')
-      .select('id, store_name, commission_rate')
+      .select('id, store_name, commission_rate, user_id')
       .eq('id', product.vendor_id)
       .single()
 
-    const { data: vendorUser } = await admin
-      .from('users')
-      .select('email')
-      .eq('id', (await admin.from('vendors').select('user_id').eq('id', product.vendor_id).single()).data?.user_id ?? '')
-      .single()
+    const { data: vendorUser } = vendorRow?.user_id
+      ? await admin.from('users').select('email').eq('id', vendorRow.user_id).single()
+      : { data: null }
 
-    const commissionDue = item.price * item.quantity * ((vendor?.commission_rate ?? 12) / 100)
+    const commissionDue = item.price * item.quantity * ((vendorRow?.commission_rate ?? 12) / 100)
 
     await admin.from('order_items').insert({
       order_id: order.id,
@@ -157,9 +155,14 @@ export async function placeOrder(data: CheckoutData): Promise<ActionResult<{ ord
         .eq('id', item.productId)
     }
 
-    if (vendor && vendorUser) {
+    if (vendorRow && vendorUser) {
       if (!vendorMap.has(product.vendor_id)) {
-        vendorMap.set(product.vendor_id, { email: vendorUser.email, storeName: vendor.store_name, items: [] })
+        vendorMap.set(product.vendor_id, {
+          email: vendorUser.email,
+          userId: vendorRow.user_id,
+          storeName: vendorRow.store_name,
+          items: [],
+        })
       }
       vendorMap.get(product.vendor_id)!.items.push(item)
     }
@@ -226,6 +229,14 @@ export async function placeOrder(data: CheckoutData): Promise<ActionResult<{ ord
   }
 
   for (const [, vendor] of vendorMap) {
+    const itemSummary = vendor.items.map((i) => `${i.name} x${i.quantity}`).join(', ')
+    // In-app notification for vendor
+    await admin.from('notifications').insert({
+      user_id: vendor.userId,
+      type: 'new_order',
+      message: `Porosi e re #${order.id.slice(0, 8).toUpperCase()} nga ${data.city} — ${itemSummary}.`,
+    })
+    // Email notification for vendor
     try {
       await sendNewOrderAlert(vendor.email, {
         orderId: order.id,

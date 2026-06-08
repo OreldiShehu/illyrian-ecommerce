@@ -27,6 +27,8 @@ export default function VendorOrdersPage() {
       const { data: v } = await supabase.from('vendors').select('id').eq('user_id', user.id).single()
       if (!v) return
       setVendorId(v.id)
+      // Mark all new_order notifications as read
+      supabase.from('notifications').update({ read: true }).eq('user_id', user.id).eq('type', 'new_order').eq('read', false).then(() => {})
 
       // orders has no vendor_id — get order IDs via order_items
       const { data: vendorItems } = await supabase
