@@ -1242,6 +1242,7 @@ a { text-decoration: none; color: inherit; }
   .nav-links { display: none; }
   .hamburger { display: flex; }
   .nav-right a:not(.icon-btn) { display: none; }
+  .lang-switcher-nav { display: none; }
   .search-section { padding: 12px 20px; }
   .offers-banner { padding: 10px 20px; }
   .stores-section { padding: 28px 20px 16px; }

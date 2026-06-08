@@ -69,7 +69,9 @@ export default function Navbar({ mobileMenuOpen, onToggleMobile }: Props) {
       </div>
 
       <div className="nav-right">
-        <LanguageSwitcher />
+        <div className="lang-switcher-nav">
+          <LanguageSwitcher />
+        </div>
         {user ? (
           <>
             <Link href="/account">{t('nav.account')}</Link>
