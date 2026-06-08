@@ -208,7 +208,11 @@ export async function uploadProductImage(formData: FormData): Promise<ActionResu
     const result = await uploadImage(file, 'products', 'product')
     return { success: true, data: { url: result.secure_url } }
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e)
+    const msg = e instanceof Error
+      ? e.message
+      : typeof e === 'object' && e !== null
+        ? JSON.stringify(e)
+        : String(e)
     console.error('[uploadProductImage]', msg)
     return { success: false, error: msg }
   }
