@@ -1,14 +1,19 @@
+'use client'
+
 import Link from 'next/link'
+import { useLanguage } from '@/lib/i18n'
 
 export default function AnnouncementBar() {
+  const { t } = useLanguage()
+
   return (
     <div className="announce-bar">
-      <span>Dërgesa falas për porosi mbi €50</span>
+      <span>{t('announce.shipping')}</span>
       <span className="sep">·</span>
-      <span>Dyqane të reja çdo javë</span>
+      <span>{t('announce.new_stores')}</span>
       <span className="sep">·</span>
       <span>
-        <Link href="/auth/register">Regjistrohu dhe merr 10% zbritje në porosinë e parë</Link>
+        <Link href="/auth/register">{t('announce.discount')}</Link>
       </span>
     </div>
   )

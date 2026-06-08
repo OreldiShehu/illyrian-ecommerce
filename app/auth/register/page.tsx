@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useLanguage } from '@/lib/i18n'
 
 const clean = (s: string) =>
   Array.from(s).filter(c => {
@@ -15,6 +16,7 @@ export default function RegisterPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [fields, setFields] = useState({ name: '', email: '', phone: '', password: '', confirmPassword: '' })
+  const { t } = useLanguage()
 
   const set = (k: keyof typeof fields) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setFields(f => ({ ...f, [k]: e.target.value }))
@@ -31,17 +33,17 @@ export default function RegisterPage() {
     const confirmPassword = clean(fields.confirmPassword)
 
     if (!name || !email || !password) {
-      setError('Të gjitha fushat janë të detyrueshme.')
+      setError(t('auth.required'))
       setLoading(false)
       return
     }
     if (password !== confirmPassword) {
-      setError('Fjalëkalimet nuk përputhen.')
+      setError(t('auth.password_mismatch'))
       setLoading(false)
       return
     }
     if (password.length < 8) {
-      setError('Fjalëkalimi duhet të ketë të paktën 8 karaktere.')
+      setError(t('auth.password_short'))
       setLoading(false)
       return
     }
@@ -59,7 +61,7 @@ export default function RegisterPage() {
       if (authError) {
         setError(
           authError.message.includes('already registered')
-            ? 'Ky email është tashmë i regjistruar.'
+            ? t('auth.already_registered')
             : authError.message
         )
         setLoading(false)
@@ -67,7 +69,7 @@ export default function RegisterPage() {
       }
 
       if (!data.user) {
-        setError('Regjistrimi dështoi. Provoni përsëri.')
+        setError(t('auth.required'))
         setLoading(false)
         return
       }
@@ -87,7 +89,7 @@ export default function RegisterPage() {
 
       // Email not confirmed yet — show message instead of broken redirect
       setLoading(false)
-      setError('Regjistrimi u krye! Kontrolloni emailin tuaj dhe konfirmoni llogarinë para se të hyni.')
+      setError(t('auth.confirm_email'))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ndodhi nje gabim. Provoni perseri.')
       setLoading(false)
@@ -115,41 +117,41 @@ export default function RegisterPage() {
           <span className="auth-logo-main">MIO E-COMMERCE</span>
           <span className="auth-logo-sub">DISCOVER &middot; COMPARE &middot; ORDER</span>
         </div>
-        <h1 className="auth-title">REGJISTROHU</h1>
+        <h1 className="auth-title">{t('auth.register_title')}</h1>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 24 }}>
           <button type="button" onClick={() => setRole('customer')} style={btnStyle(role === 'customer')}>
-            BLI SI KLIENT
+            {t('auth.as_customer')}
           </button>
           <button type="button" onClick={() => setRole('vendor')} style={btnStyle(role === 'vendor')}>
-            HAP DYQANIN
+            {t('auth.as_vendor')}
           </button>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-label">Emri i plot&euml;</label>
+            <label className="form-label">{t('auth.fullname')}</label>
             <input
               type="text" className="form-input" placeholder="Emri Mbiemri"
               required autoComplete="off" value={fields.name} onChange={set('name')}
             />
           </div>
           <div className="form-group">
-            <label className="form-label">Email</label>
+            <label className="form-label">{t('auth.email')}</label>
             <input
               type="email" className="form-input" placeholder="email@shembull.com"
               required autoComplete="off" value={fields.email} onChange={set('email')}
             />
           </div>
           <div className="form-group">
-            <label className="form-label">Numri i telefonit</label>
+            <label className="form-label">{t('auth.phone')}</label>
             <input
               type="tel" className="form-input" placeholder="+355 6X XXX XXXX"
               autoComplete="off" value={fields.phone} onChange={set('phone')}
             />
           </div>
           <div className="form-group">
-            <label className="form-label">Fjal&euml;kalimi</label>
+            <label className="form-label">{t('auth.password')}</label>
             <input
               type="password" className="form-input" placeholder="Minimum 8 karaktere"
               required minLength={8} autoComplete="new-password"
@@ -157,7 +159,7 @@ export default function RegisterPage() {
             />
           </div>
           <div className="form-group">
-            <label className="form-label">Konfirmo fjal&euml;kalimin</label>
+            <label className="form-label">{t('auth.confirm_password')}</label>
             <input
               type="password" className="form-input" placeholder="Ri-shkruaj fjal&euml;kalimin"
               required autoComplete="new-password"
@@ -169,19 +171,19 @@ export default function RegisterPage() {
 
           {role === 'vendor' && (
             <div style={{ background: 'var(--off-white)', border: '1px solid var(--border)', borderRadius: 6, padding: '12px 14px', marginBottom: 16, fontSize: 12, color: 'var(--gray-dark)', lineHeight: 1.6 }}>
-              Pas regjistrimit do t&euml; plot&euml;soni detajet e dyqanit tuaj. Rishikohet brenda 24 or&euml;sh.
+              {t('auth.vendor_note')}
             </div>
           )}
 
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'DUKE REGJISTRUAR...' : role === 'vendor' ? 'HAP DYQANIN' : 'REGJISTROHU'}
+            {loading ? t('auth.registering') : role === 'vendor' ? t('auth.open_store_btn') : t('auth.register_btn')}
           </button>
         </form>
 
         <div style={{ textAlign: 'center', marginTop: 20 }}>
-          <p style={{ fontSize: 12, color: 'var(--gray-dark)', marginBottom: 8 }}>Keni tashm&euml; llogari?</p>
+          <p style={{ fontSize: 12, color: 'var(--gray-dark)', marginBottom: 8 }}>{t('auth.have_account')}</p>
           <Link href="/auth/login" style={{ fontFamily: 'var(--font-display)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', color: 'var(--black)', borderBottom: '1px solid var(--black)' }}>
-            KY&Ccedil;U
+            {t('auth.login_link')}
           </Link>
         </div>
       </div>

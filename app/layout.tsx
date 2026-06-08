@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { CartProvider } from '@/components/providers/CartProvider'
+import { LanguageProvider } from '@/lib/i18n'
 
 export const metadata: Metadata = {
   title: "MIO E-Commerce — Moda Shqiptare Online",
@@ -36,9 +37,11 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <CartProvider>
-          {children}
-        </CartProvider>
+        <LanguageProvider>
+          <CartProvider>
+            {children}
+          </CartProvider>
+        </LanguageProvider>
       </body>
     </html>
   )

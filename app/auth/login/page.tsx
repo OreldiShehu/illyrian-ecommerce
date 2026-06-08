@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useState, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useLanguage } from '@/lib/i18n'
 
 const clean = (s: string) =>
   Array.from(s).filter(c => {
@@ -18,6 +19,7 @@ function LoginForm() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [fields, setFields] = useState({ email: '', password: '' })
+  const { t } = useLanguage()
 
   const set = (k: keyof typeof fields) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setFields(f => ({ ...f, [k]: e.target.value }))
@@ -37,7 +39,7 @@ function LoginForm() {
       if (authError) {
         setError(
           authError.message.includes('Invalid login')
-            ? 'Email ose fjalëkalim i gabuar.'
+            ? t('auth.invalid_login')
             : authError.message
         )
         setLoading(false)
@@ -85,11 +87,11 @@ function LoginForm() {
           <span className="auth-logo-sub">DISCOVER &middot; COMPARE &middot; ORDER</span>
         </div>
 
-        <h1 className="auth-title">KY&Ccedil;U</h1>
+        <h1 className="auth-title">{t('auth.login_title')}</h1>
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-label" htmlFor="email">Email</label>
+            <label className="form-label" htmlFor="email">{t('auth.email')}</label>
             <input
               id="email"
               type="email"
@@ -103,7 +105,7 @@ function LoginForm() {
           </div>
 
           <div className="form-group">
-            <label className="form-label" htmlFor="password">Fjal&euml;kalimi</label>
+            <label className="form-label" htmlFor="password">{t('auth.password')}</label>
             <input
               id="password"
               type="password"
@@ -119,19 +121,19 @@ function LoginForm() {
           {error && <p className="form-error" style={{ marginBottom: 12 }}>{error}</p>}
 
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'DUKE HYR&Euml;…' : 'KY&Ccedil;U'}
+            {loading ? t('auth.logging_in') : t('auth.login_btn')}
           </button>
         </form>
 
         <div style={{ textAlign: 'center', marginTop: 20 }}>
           <p style={{ fontSize: 12, color: 'var(--gray-dark)', marginBottom: 8 }}>
-            Nuk keni llogari?
+            {t('auth.no_account')}
           </p>
           <Link
             href="/auth/register"
             style={{ fontFamily: 'var(--font-display)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', color: 'var(--black)', borderBottom: '1px solid var(--black)' }}
           >
-            REGJISTROHU
+            {t('auth.register_link')}
           </Link>
         </div>
       </div>

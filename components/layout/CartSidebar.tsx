@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useEffect } from 'react'
 import { useCartStore, selectSubtotal, selectItemCount } from '@/store/cart'
 import { formatPrice } from '@/lib/utils'
+import { useLanguage } from '@/lib/i18n'
 
 export default function CartSidebar() {
   const cartOpen = useCartStore((s) => s.cartOpen)
@@ -14,6 +15,7 @@ export default function CartSidebar() {
   const updateQuantity = useCartStore((s) => s.updateQuantity)
   const subtotal = useCartStore(selectSubtotal)
   const itemCount = useCartStore(selectItemCount)
+  const { t } = useLanguage()
 
   // Close on Escape
   useEffect(() => {
@@ -57,7 +59,7 @@ export default function CartSidebar() {
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 24px', borderBottom: '1px solid var(--border)' }}>
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 13, fontWeight: 900, letterSpacing: '0.15em' }}>
-            SHPORTA {itemCount > 0 && `(${itemCount})`}
+            {t('cart.title')} {itemCount > 0 && `(${itemCount})`}
           </h2>
           <button onClick={closeCart} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 22, color: 'var(--gray-mid)', lineHeight: 1 }}>×</button>
         </div>
@@ -66,9 +68,9 @@ export default function CartSidebar() {
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px' }}>
           {items.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px 0' }}>
-              <p style={{ fontFamily: 'var(--font-display)', fontSize: 12, letterSpacing: '0.15em', color: 'var(--gray-mid)', marginBottom: 20 }}>SHPORTA ËSHTË BOSH</p>
+              <p style={{ fontFamily: 'var(--font-display)', fontSize: 12, letterSpacing: '0.15em', color: 'var(--gray-mid)', marginBottom: 20 }}>{t('cart.empty')}</p>
               <Link href="/stores" onClick={closeCart} className="btn-primary" style={{ display: 'inline-block', textDecoration: 'none', padding: '12px 24px', width: 'auto', fontSize: 11 }}>
-                SHIKO DYQANET
+                {t('cart.browse')}
               </Link>
             </div>
           ) : (
@@ -103,7 +105,7 @@ export default function CartSidebar() {
         {items.length > 0 && (
           <div style={{ padding: '16px 24px 24px', borderTop: '1px solid var(--border)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-              <span style={{ fontSize: 13, color: 'var(--gray-dark)' }}>Nëntotali</span>
+              <span style={{ fontSize: 13, color: 'var(--gray-dark)' }}>{t('cart.subtotal')}</span>
               <span style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 900 }}>{formatPrice(subtotal)}</span>
             </div>
             <Link
@@ -112,10 +114,10 @@ export default function CartSidebar() {
               className="btn-primary"
               style={{ display: 'block', textDecoration: 'none', textAlign: 'center', padding: '14px', fontSize: 13 }}
             >
-              VAZHDO ME BLERJEN
+              {t('cart.checkout')}
             </Link>
             <button onClick={closeCart} style={{ width: '100%', marginTop: 10, background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: 'var(--gray-mid)', fontFamily: 'var(--font-display)', letterSpacing: '0.08em' }}>
-              VAZHDONI BLERJEN
+              {t('cart.continue')}
             </button>
           </div>
         )}

@@ -8,6 +8,7 @@ import { placeOrder, validateCoupon } from '@/app/actions/checkout'
 import { ALBANIAN_CITIES } from '@/types'
 import { formatPrice } from '@/lib/utils'
 import SiteLayout from '@/components/layout/SiteLayout'
+import { useLanguage } from '@/lib/i18n'
 import type { Coupon } from '@/types'
 
 export default function CheckoutPage() {
@@ -26,6 +27,7 @@ export default function CheckoutPage() {
   const loyaltyDiscount = useCartStore(selectLoyaltyDiscount)
   const deliveryFee = useCartStore(selectDeliveryFee)
   const total = useCartStore(selectTotal)
+  const { t } = useLanguage()
   const applyCoupon = useCartStore((s) => s.applyCoupon)
   const removeCoupon = useCartStore((s) => s.removeCoupon)
   const removeItem = useCartStore((s) => s.removeItem)
@@ -43,7 +45,7 @@ export default function CheckoutPage() {
       applyCoupon(result.data!.coupon as unknown as Coupon)
       setCouponCode('')
     } else {
-      setCouponError(result.error ?? 'Kodi i pavlefshëm.')
+      setCouponError(result.error ?? t('checkout.invalid_coupon'))
     }
     setCouponLoading(false)
   }
@@ -68,7 +70,7 @@ export default function CheckoutPage() {
       })
 
       if (!result || !result.success) {
-        setError(result?.error ?? 'Porosia dështoi. Provoni përsëri.')
+        setError(result?.error ?? t('checkout.error'))
         setSubmitting(false)
       }
       // On success the server action calls redirect() which navigates the page
@@ -93,10 +95,10 @@ export default function CheckoutPage() {
       <SiteLayout>
         <div className="page-inner" style={{ textAlign: 'center', padding: '80px 20px' }}>
           <p style={{ fontFamily: 'var(--font-display)', fontSize: 14, letterSpacing: '0.15em', color: 'var(--gray-dark)', marginBottom: 24 }}>
-            SHPORTA JUAJ ËSHTË BOSH
+            {t('checkout.empty_title')}
           </p>
           <Link href="/stores" className="btn-primary" style={{ display: 'inline-block', textDecoration: 'none', padding: '13px 28px', width: 'auto' }}>
-            EKSPLORONI DYQANET
+            {t('checkout.explore')}
           </Link>
         </div>
       </SiteLayout>
@@ -106,37 +108,37 @@ export default function CheckoutPage() {
   return (
     <SiteLayout>
       <div className="page-inner">
-        <h1 className="page-title">CHECKOUT</h1>
+        <h1 className="page-title">{t('checkout.title')}</h1>
 
         <form onSubmit={handleSubmit}>
           <div className="checkout-grid">
             {/* Left: Delivery form */}
             <div>
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 13, fontWeight: 800, letterSpacing: '0.2em', marginBottom: 20, paddingBottom: 12, borderBottom: '2px solid var(--black)' }}>
-                ADRESA E DORËZIMIT
+                {t('checkout.delivery_address')}
               </h2>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label" htmlFor="name">Emri i plotë *</label>
+                  <label className="form-label" htmlFor="name">{t('checkout.fullname')} *</label>
                   <input id="name" name="name" type="text" className="form-input" required placeholder="Emri Mbiemri" autoComplete="name" />
                 </div>
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label" htmlFor="phone">Numri i telefonit *</label>
+                  <label className="form-label" htmlFor="phone">{t('checkout.phone')} *</label>
                   <input id="phone" name="phone" type="tel" className="form-input" required placeholder="+355 6X XXX XXXX" autoComplete="tel" />
                 </div>
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label" htmlFor="address">Adresa *</label>
+                  <label className="form-label" htmlFor="address">{t('checkout.address')} *</label>
                   <input id="address" name="address" type="text" className="form-input" required placeholder="Rruga, nr. 12, kati 3" autoComplete="street-address" />
                 </div>
                 <div className="form-group">
-                  <label className="form-label" htmlFor="city">Qyteti *</label>
+                  <label className="form-label" htmlFor="city">{t('checkout.city')} *</label>
                   <select id="city" name="city" className="form-select" required>
                     {ALBANIAN_CITIES.map((c) => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
                 <div className="form-group">
-                  <label className="form-label" htmlFor="notes">Apartament / Shënime</label>
+                  <label className="form-label" htmlFor="notes">{t('checkout.notes')}</label>
                   <input id="notes" name="notes" type="text" className="form-input" placeholder="Apartamenti, ndërtesa, etj." />
                 </div>
               </div>
@@ -144,15 +146,15 @@ export default function CheckoutPage() {
               {/* Payment */}
               <div style={{ marginTop: 32 }}>
                 <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 13, fontWeight: 800, letterSpacing: '0.2em', marginBottom: 16, paddingBottom: 12, borderBottom: '2px solid var(--black)' }}>
-                  MËNYRA E PAGESËS
+                  {t('checkout.payment_method')}
                 </h2>
                 <div style={{ border: '2px solid var(--black)', borderRadius: 8, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
                   <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--black)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--white)' }} />
                   </div>
                   <div>
-                    <p style={{ fontFamily: 'var(--font-display)', fontSize: 13, fontWeight: 700, letterSpacing: '0.08em' }}>PAGUAJ ME DORËZIM (CASH)</p>
-                    <p style={{ fontSize: 12, color: 'var(--gray-dark)', marginTop: 2 }}>Paguani me cash kur të merrni porosinë</p>
+                    <p style={{ fontFamily: 'var(--font-display)', fontSize: 13, fontWeight: 700, letterSpacing: '0.08em' }}>{t('checkout.cod')}</p>
+                    <p style={{ fontSize: 12, color: 'var(--gray-dark)', marginTop: 2 }}>{t('checkout.cod_desc')}</p>
                   </div>
                 </div>
               </div>
@@ -163,7 +165,7 @@ export default function CheckoutPage() {
               <div style={{ border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden' }}>
                 <div style={{ background: 'var(--black)', padding: '16px 20px' }}>
                   <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 12, fontWeight: 800, letterSpacing: '0.2em', color: 'var(--white)' }}>
-                    PËRMBLEDHJA E POROSISË
+                    {t('checkout.summary')}
                   </h2>
                 </div>
 
@@ -206,20 +208,20 @@ export default function CheckoutPage() {
                     {coupon ? (
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#D1FAE5', padding: '8px 12px', borderRadius: 6 }}>
                         <span style={{ fontSize: 12, color: '#065F46', fontWeight: 700 }}>KOD: {coupon.code}</span>
-                        <button type="button" onClick={removeCoupon} style={{ fontSize: 11, color: '#065F46', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>HIQE</button>
+                        <button type="button" onClick={removeCoupon} style={{ fontSize: 11, color: '#065F46', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>{t('checkout.remove')}</button>
                       </div>
                     ) : (
                       <div style={{ display: 'flex', gap: 8 }}>
                         <input
                           type="text"
                           className="form-input"
-                          placeholder="Kodi i zbritjes"
+                          placeholder={t('checkout.coupon')}
                           value={couponCode}
                           onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                           style={{ flex: 1 }}
                         />
                         <button type="button" onClick={handleCoupon} disabled={couponLoading} className="btn-secondary" style={{ padding: '10px 12px', fontSize: 10, whiteSpace: 'nowrap' }}>
-                          {couponLoading ? '…' : 'APLIKO'}
+                          {couponLoading ? '…' : t('checkout.apply')}
                         </button>
                       </div>
                     )}
@@ -229,27 +231,27 @@ export default function CheckoutPage() {
                   {/* Totals */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-                      <span style={{ color: 'var(--gray-dark)' }}>Nëntotali</span>
+                      <span style={{ color: 'var(--gray-dark)' }}>{t('checkout.subtotal')}</span>
                       <span>{formatPrice(subtotal)}</span>
                     </div>
                     {discount > 0 && (
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-                        <span style={{ color: 'var(--gray-dark)' }}>Zbritja</span>
+                        <span style={{ color: 'var(--gray-dark)' }}>{t('checkout.discount')}</span>
                         <span style={{ color: '#16a34a' }}>-{formatPrice(discount)}</span>
                       </div>
                     )}
                     {loyaltyDiscount > 0 && (
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-                        <span style={{ color: 'var(--gray-dark)' }}>Pikë besnikërie</span>
+                        <span style={{ color: 'var(--gray-dark)' }}>{t('checkout.loyalty')}</span>
                         <span style={{ color: '#16a34a' }}>-{formatPrice(loyaltyDiscount)}</span>
                       </div>
                     )}
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-                      <span style={{ color: 'var(--gray-dark)' }}>Dërgesa</span>
-                      <span>{deliveryFee === 0 ? 'Falas' : formatPrice(deliveryFee)}</span>
+                      <span style={{ color: 'var(--gray-dark)' }}>{t('checkout.delivery')}</span>
+                      <span>{deliveryFee === 0 ? t('checkout.free') : formatPrice(deliveryFee)}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 900, paddingTop: 8, borderTop: '2px solid var(--black)', marginTop: 4 }}>
-                      <span>TOTALI</span>
+                      <span>{t('checkout.total')}</span>
                       <span>{formatPrice(total)}</span>
                     </div>
                   </div>
@@ -258,11 +260,11 @@ export default function CheckoutPage() {
                 <div style={{ padding: '0 20px 20px' }}>
                   {error && <p className="form-error" style={{ marginBottom: 12 }}>{error}</p>}
                   <button type="submit" className="btn-primary" disabled={submitting}>
-                    {submitting ? 'DUKE POROSITUR…' : `POROSIT — ${formatPrice(total)}`}
+                    {submitting ? t('checkout.placing') : `${t('checkout.order_btn')} — ${formatPrice(total)}`}
                   </button>
                   <p style={{ fontSize: 11, color: 'var(--gray-dark)', textAlign: 'center', marginTop: 10, lineHeight: 1.5 }}>
-                    💵 Pagesa me cash gjatë dorëzimit<br />
-                    🕐 Dorëzim: 2-3 ditë pune
+                    {t('checkout.cash_note')}<br />
+                    {t('checkout.delivery_note')}
                   </p>
                 </div>
               </div>
