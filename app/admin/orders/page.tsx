@@ -1,60 +1,52 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useState, useEffect, useCallback } from 'react'
 import { formatPrice, formatDate, generateOrderNumber } from '@/lib/utils'
 import { ORDER_STATUSES } from '@/types'
+import { getAdminOrders, setOrderStatus, type AdminOrderRow } from '@/app/actions/admin'
 import Papa from 'papaparse'
-
-interface OrderRow {
-  id: string
-  status: string
-  total: number
-  created_at: string
-  shipping_name: string
-  shipping_city: string
-  shipping_phone: string
-  shipping_address: string
-  coupon_code: string | null
-  coupon_discount: number
-  vendors?: { store_name: string } | null
-}
 
 const PAGE_SIZE = 20
 
+function getVendorNames(order: AdminOrderRow): string {
+  const names = [...new Set(order.order_items?.map((i) => i.vendors?.store_name).filter(Boolean) ?? [])]
+  return names.join(', ') || '—'
+}
+
 export default function AdminOrdersPage() {
-  const supabase = createClient()
-  const [orders, setOrders] = useState<OrderRow[]>([])
+  const [orders, setOrders] = useState<AdminOrderRow[]>([])
   const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [page, setPage] = useState(0)
   const [total, setTotal] = useState(0)
   const [search, setSearch] = useState('')
   const [searchInput, setSearchInput] = useState('')
+  const [updatingId, setUpdatingId] = useState<string | null>(null)
 
-  useEffect(() => {
-    async function load() {
-      setLoading(true)
-      let query = supabase
-        .from('orders')
-        .select('id, status, total, created_at, shipping_name, shipping_city, shipping_phone, shipping_address, coupon_code, coupon_discount, vendors(store_name)', { count: 'exact' })
-        .order('created_at', { ascending: false })
-        .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
-
-      if (statusFilter !== 'all') query = query.eq('status', statusFilter)
-      if (search) query = query.ilike('shipping_name', `%${search}%`)
-
-      const { data, count } = await query
-      setOrders((data ?? []) as OrderRow[])
-      setTotal(count ?? 0)
-      setLoading(false)
+  const load = useCallback(async () => {
+    setLoading(true)
+    const result = await getAdminOrders({ page, status: statusFilter, search })
+    if (result.success && result.data) {
+      setOrders(result.data.orders)
+      setTotal(result.data.total)
     }
-    load()
-  }, [statusFilter, page, search])
+    setLoading(false)
+  }, [page, statusFilter, search])
+
+  useEffect(() => { load() }, [load])
 
   const handleSearch = () => {
     setSearch(searchInput)
     setPage(0)
+  }
+
+  const handleStatusChange = async (orderId: string, newStatus: string) => {
+    setUpdatingId(orderId)
+    const result = await setOrderStatus(orderId, newStatus)
+    if (result.success) {
+      setOrders((prev) => prev.map((o) => o.id === orderId ? { ...o, status: newStatus } : o))
+    }
+    setUpdatingId(null)
   }
 
   const exportCSV = () => {
@@ -66,7 +58,7 @@ export default function AdminOrdersPage() {
       city: o.shipping_city,
       phone: o.shipping_phone,
       address: o.shipping_address,
-      vendor: (o.vendors as any)?.store_name ?? '',
+      vendor: getVendorNames(o),
       coupon: o.coupon_code ?? '',
       coupon_discount: o.coupon_discount,
       date: formatDate(o.created_at),
@@ -164,7 +156,7 @@ export default function AdminOrdersPage() {
                     <p style={{ fontSize: 11, color: 'var(--gray-mid)' }}>{order.shipping_phone}</p>
                   </td>
                   <td style={{ fontSize: 12 }}>{order.shipping_city}</td>
-                  <td style={{ fontSize: 12, color: 'var(--gray-dark)' }}>{(order.vendors as any)?.store_name ?? '—'}</td>
+                  <td style={{ fontSize: 12, color: 'var(--gray-dark)' }}>{getVendorNames(order)}</td>
                   <td style={{ fontSize: 11, color: 'var(--gray-mid)' }}>{formatDate(order.created_at)}</td>
                   <td>
                     <p style={{ fontFamily: 'var(--font-display)', fontSize: 12, fontWeight: 700 }}>{formatPrice(order.total)}</p>
@@ -173,9 +165,27 @@ export default function AdminOrdersPage() {
                     )}
                   </td>
                   <td>
-                    <span className={`status-badge status-${order.status}`} style={{ fontSize: 10 }}>
-                      {ORDER_STATUSES[order.status as keyof typeof ORDER_STATUSES]?.label}
-                    </span>
+                    <select
+                      value={order.status}
+                      disabled={updatingId === order.id}
+                      onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                      style={{
+                        fontSize: 10,
+                        fontFamily: 'var(--font-display)',
+                        fontWeight: 700,
+                        letterSpacing: '0.06em',
+                        padding: '4px 8px',
+                        border: '1px solid var(--border)',
+                        borderRadius: 4,
+                        cursor: 'pointer',
+                        background: 'var(--white)',
+                        opacity: updatingId === order.id ? 0.5 : 1,
+                      }}
+                    >
+                      {Object.entries(ORDER_STATUSES).map(([key, val]) => (
+                        <option key={key} value={key}>{val.label}</option>
+                      ))}
+                    </select>
                   </td>
                 </tr>
               ))}

@@ -6,6 +6,68 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { sendCommissionReminder } from '@/lib/resend'
 import type { ActionResult } from '@/types'
 
+const ORDERS_PAGE_SIZE = 20
+
+export interface AdminOrderRow {
+  id: string
+  status: string
+  total: number
+  created_at: string
+  shipping_name: string
+  shipping_city: string
+  shipping_phone: string
+  shipping_address: string
+  coupon_code: string | null
+  coupon_discount: number
+  order_items: Array<{ vendor_id: string | null; vendors: { store_name: string } | null }>
+}
+
+export async function getAdminOrders({
+  page = 0,
+  status = 'all',
+  search = '',
+}: {
+  page?: number
+  status?: string
+  search?: string
+}): Promise<ActionResult<{ orders: AdminOrderRow[]; total: number }>> {
+  try {
+    await requireAdmin()
+    const admin = createAdminClient()
+
+    let query = admin
+      .from('orders')
+      .select(
+        'id, status, total, created_at, shipping_name, shipping_city, shipping_phone, shipping_address, coupon_code, coupon_discount, order_items(vendor_id, vendors(store_name))',
+        { count: 'exact' }
+      )
+      .order('created_at', { ascending: false })
+      .range(page * ORDERS_PAGE_SIZE, (page + 1) * ORDERS_PAGE_SIZE - 1)
+
+    if (status !== 'all') query = query.eq('status', status)
+    if (search) query = query.ilike('shipping_name', `%${search}%`)
+
+    const { data, count, error } = await query
+    if (error) return { success: false, error: error.message }
+
+    return { success: true, data: { orders: (data ?? []) as unknown as AdminOrderRow[], total: count ?? 0 } }
+  } catch (e) {
+    return { success: false, error: (e as Error).message }
+  }
+}
+
+export async function setOrderStatus(orderId: string, status: string): Promise<ActionResult> {
+  try {
+    await requireAdmin()
+    const admin = createAdminClient()
+    const { error } = await admin.from('orders').update({ status }).eq('id', orderId)
+    if (error) return { success: false, error: error.message }
+    return { success: true }
+  } catch (e) {
+    return { success: false, error: (e as Error).message }
+  }
+}
+
 async function requireAdmin() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
