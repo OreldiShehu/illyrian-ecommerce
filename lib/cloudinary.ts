@@ -15,10 +15,10 @@ type UploadResult = {
 type ImageTransform = 'product' | 'logo' | 'banner' | 'avatar'
 
 const TRANSFORMS: Record<ImageTransform, string> = {
-  product: 'w_800,q_auto,f_auto',
-  logo: 'w_200,h_200,c_fill,q_auto',
-  banner: 'w_1200,h_400,c_fill,q_auto',
-  avatar: 'w_100,h_100,c_fill,q_auto',
+  product: 'w_1200,q_auto,f_auto',
+  logo: 'w_400,h_400,c_fill,q_auto',
+  banner: 'w_1600,h_500,c_fill,q_auto',
+  avatar: 'w_200,h_200,c_fill,q_auto',
 }
 
 export async function uploadImage(
@@ -43,7 +43,7 @@ export async function uploadImage(
 
   return {
     public_id: result.public_id,
-    secure_url: result.secure_url,
+    secure_url: getOptimizedUrl(result.secure_url, transform),
     url: result.url,
   }
 }

@@ -49,7 +49,8 @@ function ProductCardItem({ product }: ProductCardProps) {
             alt={product.name}
             fill
             className="object-cover"
-            sizes="(max-width: 540px) 45vw, 200px"
+            sizes="(max-width: 540px) 45vw, (max-width: 900px) 35vw, 280px"
+            quality={85}
           />
         ) : (
           <span className="product-img-label">{product.category?.toUpperCase().slice(0, 6)}</span>

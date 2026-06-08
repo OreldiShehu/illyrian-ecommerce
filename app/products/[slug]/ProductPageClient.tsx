@@ -107,7 +107,7 @@ export default function ProductPageClient({ product, reviews, isInWishlist: init
         <div>
           <div style={{ aspectRatio: '1', background: '#252525', borderRadius: 12, overflow: 'hidden', position: 'relative', marginBottom: 12 }}>
             {product.images[selectedImage] ? (
-              <Image src={product.images[selectedImage]} alt={product.name} fill className="object-cover" priority sizes="(max-width: 900px) 90vw, 45vw" />
+              <Image src={product.images[selectedImage]} alt={product.name} fill className="object-cover" priority quality={90} sizes="(max-width: 900px) 90vw, 50vw" />
             ) : (
               <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: 24, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.2em' }}>
                 {product.category?.toUpperCase()}
