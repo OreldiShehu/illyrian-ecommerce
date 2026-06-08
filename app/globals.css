@@ -238,7 +238,7 @@ a { text-decoration: none; color: inherit; }
   align-items: flex-start;
   justify-content: space-between;
   padding: 20px 24px 16px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
   flex-shrink: 0;
 }
 .drawer-brand {
@@ -246,13 +246,13 @@ a { text-decoration: none; color: inherit; }
   font-size: 13px;
   font-weight: 900;
   letter-spacing: 0.14em;
-  color: var(--black);
+  color: #fff;
 }
 .drawer-brand-sub {
   font-family: var(--font-display);
   font-size: 8px;
   letter-spacing: 0.18em;
-  color: var(--gray-mid);
+  color: rgba(255,255,255,0.55);
   margin-top: 3px;
 }
 .drawer-close {
@@ -261,7 +261,7 @@ a { text-decoration: none; color: inherit; }
   cursor: pointer;
   font-size: 24px;
   line-height: 1;
-  color: var(--gray-mid);
+  color: rgba(255,255,255,0.6);
   padding: 0;
   margin-top: -2px;
 }
@@ -291,7 +291,7 @@ a { text-decoration: none; color: inherit; }
   gap: 0;
   flex-direction: column;
   padding: 8px 0;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(255,255,255,0.12);
   flex-shrink: 0;
 }
 .drawer-bottom a {
@@ -301,17 +301,17 @@ a { text-decoration: none; color: inherit; }
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
-  color: var(--gray-dark);
-  border-bottom: 1px solid var(--gray-light);
+  color: rgba(255,255,255,0.7);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
   transition: background 0.15s;
 }
 .drawer-bottom a:last-child { border-bottom: none; }
-.drawer-bottom a:hover { background: var(--off-white); }
+.drawer-bottom a:hover { background: rgba(255,255,255,0.07); }
 
 .drawer-lang {
   margin-top: auto;
   padding: 20px 24px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(255,255,255,0.12);
   flex-shrink: 0;
 }
 .drawer-lang-label {
@@ -320,7 +320,7 @@ a { text-decoration: none; color: inherit; }
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.2em;
-  color: var(--gray-mid);
+  color: rgba(255,255,255,0.5);
   margin-bottom: 12px;
 }
 .drawer-lang-btns {
@@ -334,17 +334,17 @@ a { text-decoration: none; color: inherit; }
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.1em;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid rgba(255,255,255,0.25);
   background: transparent;
-  color: var(--gray-dark);
+  color: rgba(255,255,255,0.75);
   cursor: pointer;
   border-radius: 6px;
   transition: all 0.15s;
 }
 .drawer-lang-btn.active {
-  border-color: var(--black);
-  background: var(--black);
-  color: var(--white);
+  border-color: #fff;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
 }
 
 .drawer-overlay {
@@ -2047,4 +2047,24 @@ a { text-decoration: none; color: inherit; }
   .products-filter-row { gap: 8px; }
   .modal-panel { margin: 8px; border-radius: 12px; }
   .size-table th, .size-table td { padding: 8px 6px; font-size: 11px; }
+}
+
+/* Store hero banner responsive */
+.store-hero-content {
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .store-hero-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 24px 20px !important;
+  }
+  .store-hero-content .store-hero-whatsapp {
+    align-self: flex-start;
+  }
 }
