@@ -577,6 +577,9 @@ a { text-decoration: none; color: inherit; }
 .products-scroll::-webkit-scrollbar-track { background: var(--gray-light); border-radius: 2px; }
 .products-scroll::-webkit-scrollbar-thumb { background: var(--gray-mid); border-radius: 2px; }
 
+.store-products-scroll { -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory; scroll-behavior: smooth; }
+.store-products-scroll::-webkit-scrollbar { display: none; }
+
 /* =========================================
    PRODUCT CARD (homepage scroll)
    ========================================= */

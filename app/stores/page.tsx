@@ -79,7 +79,7 @@ export default async function StoresPage({
 
     for (const p of products ?? []) {
       if (!productsByVendor[p.vendor_id]) productsByVendor[p.vendor_id] = []
-      if (productsByVendor[p.vendor_id].length < 4) productsByVendor[p.vendor_id].push(p)
+      if (productsByVendor[p.vendor_id].length < 10) productsByVendor[p.vendor_id].push(p)
     }
   }
 

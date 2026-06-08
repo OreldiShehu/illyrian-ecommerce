@@ -136,30 +136,14 @@ export default function StoresPageClient({ vendors, cities, categories, products
               const storeProducts = productsByVendor[vendor.id] ?? []
 
               return (
-                <Link
-                  key={vendor.id}
-                  href={`/stores/${vendor.slug}`}
-                  style={{ textDecoration: 'none', display: 'block' }}
-                >
-                  <div className="store-block" style={{ margin: 0, cursor: 'pointer' }}>
-                    {/* Product preview strip */}
-                    {storeProducts.length > 0 ? (
-                      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(storeProducts.length, 4)}, 1fr)`, height: 110, overflow: 'hidden' }}>
-                        {storeProducts.slice(0, 4).map((p) => (
-                          <div key={p.id} style={{ position: 'relative', overflow: 'hidden' }}>
-                            {p.images?.[0] ? (
-                              <Image src={p.images[0]} alt={p.name} fill className="object-cover" sizes="120px" />
-                            ) : (
-                              <div style={{ width: '100%', height: '100%', background: '#2a2a2a' }} />
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    ) : vendor.banner_url ? (
-                      <div style={{ height: 80, position: 'relative', overflow: 'hidden' }}>
+                <div key={vendor.id} className="store-block" style={{ margin: 0, display: 'flex', flexDirection: 'column' }}>
+                  {/* Store header — clickable */}
+                  <Link href={`/stores/${vendor.slug}`} style={{ textDecoration: 'none' }}>
+                    {vendor.banner_url && (
+                      <div style={{ height: 72, position: 'relative', overflow: 'hidden' }}>
                         <Image src={vendor.banner_url} alt="" fill className="object-cover" />
                       </div>
-                    ) : null}
+                    )}
                     <div className="store-head">
                       <div className="store-info">
                         <div className="store-avatar">
@@ -180,16 +164,53 @@ export default function StoresPageClient({ vendors, cities, categories, products
                       </div>
                       {plan === 'pro' && <div className="store-badge offer">PRO</div>}
                     </div>
-                    {vendor.bio && (
-                      <div style={{ padding: '10px 20px', fontSize: 12, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>
-                        {vendor.bio.slice(0, 100)}{vendor.bio.length > 100 ? '…' : ''}
-                      </div>
-                    )}
+                  </Link>
+
+                  {/* Horizontal product scroll */}
+                  {storeProducts.length > 0 && (
+                    <div style={{
+                      display: 'flex',
+                      gap: 8,
+                      overflowX: 'auto',
+                      padding: '12px 16px',
+                      scrollbarWidth: 'none',
+                      msOverflowStyle: 'none',
+                    }}
+                      className="store-products-scroll"
+                    >
+                      {storeProducts.map((p) => (
+                        <Link
+                          key={p.id}
+                          href={`/products/${p.slug}`}
+                          style={{ textDecoration: 'none', flexShrink: 0 }}
+                        >
+                          <div style={{ width: 100 }}>
+                            <div style={{ width: 100, height: 100, borderRadius: 8, background: '#3a3a3a', position: 'relative', overflow: 'hidden', marginBottom: 6 }}>
+                              {p.images?.[0] ? (
+                                <Image src={p.images[0]} alt={p.name} fill className="object-cover" sizes="100px" />
+                              ) : (
+                                <div style={{ width: '100%', height: '100%', background: '#3a3a3a' }} />
+                              )}
+                            </div>
+                            <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.8)', lineHeight: 1.3, marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 100 }}>
+                              {p.name}
+                            </p>
+                            <p style={{ fontSize: 11, fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--white)' }}>
+                              €{p.price.toFixed(2)}
+                            </p>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Footer */}
+                  <Link href={`/stores/${vendor.slug}`} style={{ textDecoration: 'none', marginTop: 'auto' }}>
                     <div className="store-footer">
                       <span className="view-store-btn">SHIKO DYQANIN →</span>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
+                </div>
               )
             })}
           </div>
